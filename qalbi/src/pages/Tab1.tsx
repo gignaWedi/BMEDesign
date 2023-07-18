@@ -8,22 +8,19 @@ import { Preferences } from '@capacitor/preferences';
 const BATTERY_SERVICE = numberToUUID(0x180f);
 const BATTERY_CHARACTERISTIC = numberToUUID(0x2a19);
 
-
 function onDisconnect(deviceId: string): void {
   console.log(`device ${deviceId} disconnected`);
 }
 
 function parseBattery(value: DataView): number {
-  
   const heartRate = value.getUint8(0);
-  
   return heartRate;
 }
 
 const DEVICE_ID = "device_id"
 
 const Tab1: React.FC = () => {
-  const [number, setNumber] = useState<number>(0);
+  const [number, setNumber] = useState<number>(NaN);
   
   const data_loop = async () => {
     try {
