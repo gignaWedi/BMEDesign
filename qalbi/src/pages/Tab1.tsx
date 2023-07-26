@@ -47,7 +47,7 @@ const Tab1: React.FC = () => {
         BATTERY_SERVICE,
         BATTERY_CHARACTERISTIC,
         (value) => {
-          console.log('current heart rate', setNumber(parseBattery(value))); //stateful
+          setNumber(parseBattery(value)); //stateful
         }
       );
       
