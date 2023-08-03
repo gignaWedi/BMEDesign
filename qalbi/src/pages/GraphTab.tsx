@@ -1,6 +1,6 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
-import './Tab1.css';
+import './GraphTab.css';
 import { BleClient, numberToUUID } from '@capacitor-community/bluetooth-le';
 import { useState, useEffect } from 'react';
 import { Preferences } from '@capacitor/preferences';
@@ -16,7 +16,7 @@ function parseBattery(value: DataView): number {
 
 const DEVICE_ID = "device_id"
 
-const Tab1: React.FC = () => {
+const GraphTab: React.FC = () => {
   const [number, setNumber] = useState<number>(NaN);
   
   const data_loop = async () => {
@@ -91,4 +91,4 @@ const Tab1: React.FC = () => {
   );
 };
 
-export default Tab1;
+export default GraphTab;

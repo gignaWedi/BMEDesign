@@ -1,6 +1,6 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonFab, IonFabButton, IonIcon } from '@ionic/react';
 import { Filesystem, Directory } from '@capacitor/filesystem';
-import './Tab2.css';
+import './AdviceTab.css';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -49,7 +49,7 @@ export const options = {
   }
 };
 
-const Tab2: React.FC = () => {
+const AdviceTab: React.FC = () => {
   
   const [data, setData] = useState<any>({
     labels: [...Array(7).keys()],
@@ -113,4 +113,4 @@ const Tab2: React.FC = () => {
   );
 };
 
-export default Tab2;
+export default AdviceTab;
