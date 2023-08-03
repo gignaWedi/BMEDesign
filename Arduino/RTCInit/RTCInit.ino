@@ -25,6 +25,7 @@ int status = WL_IDLE_STATUS; // the WiFi radio's status
 uRTCLib rtc(0x68); // uRTCLib library object
 UnixTime stamp(0); // Unix timestamp converter
 
+// Handles WiFi communication RTC initialization.
 void setup() {
   Serial.begin(9600);
   while (!Serial);
@@ -99,9 +100,12 @@ void setup() {
   Serial.println("RTC intialized!");
 }
 
+// Prints out current time each second
 void loop() {
+  // Update the RTC
   rtc.refresh();
 
+  // Print the current DateTime
   Serial.print("RTC DateTime: ");
   Serial.print(rtc.year());
   Serial.print('/');
@@ -122,5 +126,6 @@ void loop() {
 
   Serial.println();
 
+  // Wait a second
   delay(1000);
 }
