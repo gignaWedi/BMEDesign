@@ -137,13 +137,13 @@ int sendRecords() {
 
     // Parse record
     uint32_t unix;
-    float rmssd;
-    sscanf(record, "%10d %6.2f\n", unix, rmssd);
+    float transferRmssd;
+    sscanf(record, "%10d %6.2f\n", unix, transferRmssd);
 
     // Pack record into HRV format and write to hrvChar
     char hrvValue[8];
     *((uint32_t*) hrvValue) = unix;
-    *((float*) (hrvValue+4)) = rmssd;
+    *((float*) (hrvValue+4)) = transferRmssd;
   
     hrvChar.writeValue(hrvValue);
     lastTransferTime = millis();
