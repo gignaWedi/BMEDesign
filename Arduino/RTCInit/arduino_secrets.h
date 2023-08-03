@@ -1,2 +1,2 @@
-#define SECRET_SSID ""
-#define SECRET_PASS ""
+#define SECRET_SSID "syhsop7p"
+#define SECRET_PASS "lifeisgood"
