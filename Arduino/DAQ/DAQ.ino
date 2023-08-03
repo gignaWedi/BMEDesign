@@ -365,19 +365,6 @@ void loop() {
     if (bpm > 40 && bpm < 240) {
       rmssd = sqrt(rrDiffSquaredTotal/(numRRDetected-1));
       storeRecord();
-
-      while (!connectedDevice.connected()){
-        connectedDevice = BLE.central();
-      }
-      
-      Serial.print("RMSSD: ");
-      Serial.println(rmssd);
-      
-      Serial.print("Sending RMSSD... ");
-      //hrvChar.writeValue(rmssd);
-
-      Serial.println("Done!");
-      
     } 
     else {
       errorChar.writeValue(1);
