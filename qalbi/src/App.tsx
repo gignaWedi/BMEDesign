@@ -153,7 +153,7 @@ const App: React.FC = () => {
     // Get the current user set thresholds
     const upperHRV = userSettings.upperHRVState[0];
     const lowerHRV = userSettings.lowerHRVState[0];
-
+    
     // If the user is "stressed", write 1 to the userState
     // Else if the user is "fatigued", write -1 to the userState
     // Else write 0 to the user state
@@ -211,6 +211,8 @@ const App: React.FC = () => {
   }
 
   useEffect(() => {dataHook([hrvCallback, errorCallback])}, []); // Start dataHook
+
+  // TODO:  useEffect to send local notification on userState change
 
   return (
     <IonApp>
