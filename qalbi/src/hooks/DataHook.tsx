@@ -98,9 +98,12 @@ export const fetchRecords = async(timePeriod:number): Promise<number[][]> => {
 
     var rawData = "";
 
-    var endingTimestamp = Date.now();
+    const endingTimestamp = Date.now();
 
-    var startTimestamp = endingTimestamp - 1000*timePeriod;
+    const startTimestamp = endingTimestamp - timePeriod*1000;
+
+    console.log(startTimestamp);
+    console.log(endingTimestamp);
 
     var currentTimestamp = startTimestamp;
     
@@ -108,8 +111,8 @@ export const fetchRecords = async(timePeriod:number): Promise<number[][]> => {
         const currentDatetime = new Date(currentTimestamp);
         
         const year = currentDatetime.getUTCFullYear().toString().padStart(4, '0');
-        const month = currentDatetime.getUTCMonth().toString().padStart(2, '0');
-        const day = currentDatetime.getUTCDay().toString().padStart(2, '0');
+        const month = (currentDatetime.getUTCMonth()+1) .toString().padStart(2, '0');
+        const day = currentDatetime.getUTCDate().toString().padStart(2, '0');
 
         const filename = `HRV-${year}${month}${day}.txt`;
         
