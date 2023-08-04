@@ -1,4 +1,4 @@
-import { IonCard, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonButtons, IonCard, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import './GraphTab.css';
 import { useState, useEffect } from 'react';
@@ -203,14 +203,35 @@ const GraphTab: React.FC<{userSettings:Settings}> = ({userSettings}) => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonCard className='graph'>
-          <Line options={options} data={chartData}/>
-        </IonCard>
-        <IonFab vertical="bottom" horizontal="center" slot="fixed">
-          <IonFabButton onClick={() => getChartData()}>
-            <IonIcon icon={refreshOutline}></IonIcon>
-          </IonFabButton>
-        </IonFab>
+        
+        <IonGrid className="homepage">
+            
+          <IonRow style={{"flexGrow":1, "width":"100%"}}>
+            <IonCol className='full'>
+                <IonCard className='full'>
+                  <Line options={options} data={chartData}/>
+                </IonCard>
+            </IonCol>
+          </IonRow>
+
+          <IonRow>
+            <IonCol>
+              <IonButtons>
+                <IonButton onClick={() => setTimeframe(0)}>
+                  Past Hour
+                </IonButton>
+                <IonButton onClick={() => setTimeframe(1)}>
+                  Today
+                </IonButton>
+                <IonButton onClick={() => setTimeframe(2)}>
+                  This Week
+                </IonButton>
+              </IonButtons>
+            </IonCol>
+          </IonRow>
+
+        </IonGrid>
+          
       </IonContent>
     </IonPage>
   );
