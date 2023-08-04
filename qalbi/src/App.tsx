@@ -46,33 +46,20 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 setupIonicReact();
 
-// Interface for the userSettings prop
-export interface Settings {
-  upperHRVState: [number, React.Dispatch<React.SetStateAction<number>>];
-  lowerHRVState: [number, React.Dispatch<React.SetStateAction<number>>];
-  passcodeState: [String, React.Dispatch<React.SetStateAction<String>>];
-}
-
-export type StressState = [number, React.Dispatch<React.SetStateAction<number>>];
+const LOWER_HRV = "lower_hrv";
+const UPPER_HRV = "upper_hrv";
 
 /*
  * React Functional Component responsible for setting up global states and creating the routing for the device android application.
  */
 
 const App: React.FC = () => {
-  
-  // userSettings is a collection of useState arrays for each possible setting
-  const userSettings = {
-    upperHRVState: useState<number>(16),
-    lowerHRVState: useState<number>(107),
-    passcodeState: useState<String>("")
-  }
 
   // userState is the user's current stress state
   // 0 : normal
   // -1: fatigued
   // 1: stressed
-  const userState = useState<number>(0);
+  const [stressState, setStressState] = useState<number>(0);
 
   /*
    * Callback to trigger whenever a new record is written to the HRV characteristic by the device wearable. 
@@ -160,19 +147,22 @@ const App: React.FC = () => {
     const sampleHRV = sampleRecords.map((record) => record[1]).reduce((acc, curr) => acc + curr, 0) / baselineRecords.length;
 
     // Get the current user set thresholds
-    const upperHRV = userSettings.upperHRVState[0];
-    const lowerHRV = userSettings.lowerHRVState[0];
+    const {value: rawUpperHrv} = await Preferences.get({key: UPPER_HRV});
+    const upperHRV = Number(rawUpperHrv || "200");
+    
+    const {value: rawLowerHrv} = await Preferences.get({key: LOWER_HRV});
+    const lowerHRV = Number(rawLowerHrv || "0");
     
     // If the user is "stressed", write 1 to the userState
     // Else if the user is "fatigued", write -1 to the userState
     // Else write 0 to the user state
 
     if (sampleHRV > 107 || sampleHRV > 1.15 * baselineHRV || sampleHRV > upperHRV)
-      userState[1](1);
+      setStressState(1);
     else if (sampleHRV < 16 || sampleHRV < 0.85 * baselineHRV || sampleHRV < lowerHRV)
-      userState[1](-1);
+      setStressState(-1)
     else
-      userState[1](0);
+      setStressState(0);
   }
 
   var readjustError = 0; // number of readjust Errors in the last hour
@@ -256,7 +246,7 @@ const App: React.FC = () => {
           <IonTabs>
             <IonRouterOutlet>
               <Route exact path="/tab1">
-                <GraphTab userSettings={userSettings} />
+                <GraphTab />
               </Route>
               <Route exact path="/tab2">
                 <AdviceTab />
@@ -265,7 +255,7 @@ const App: React.FC = () => {
                 <SettingsTab />
               </Route>
               <Route exact path="/">
-                <HomeScreen userSettings={userSettings} userState={userState}/>
+                <HomeScreen stressState={stressState}/>
               </Route>
             </IonRouterOutlet>
             <IonTabBar slot="bottom">

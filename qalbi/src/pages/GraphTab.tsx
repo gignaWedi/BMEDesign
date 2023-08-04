@@ -17,7 +17,9 @@ import {
 import { refreshOutline } from 'ionicons/icons';
 import { fetchRecords } from '../hooks/DataHook';
 
-import { Settings } from '../App';
+import { Preferences } from '@capacitor/preferences';
+const LOWER_HRV = "lower_hrv";
+const UPPER_HRV = "upper_hrv";
 
 ChartJS.register(
   CategoryScale,
@@ -57,7 +59,7 @@ export const options = {
  * React Functional Component responsible for creating the front end of the graph tab for the user.
  * Takes in userSettings as a prop to read the HRV thresholds
  */
-const GraphTab: React.FC<{userSettings:Settings}> = ({userSettings}) => {
+const GraphTab: React.FC = () => {
   
   // Stateful variable for the current chart.js data
   const [chartData, setChartData] = useState<any>({
@@ -173,8 +175,11 @@ const GraphTab: React.FC<{userSettings:Settings}> = ({userSettings}) => {
     const baselineHRV = baselineRecords.map((record) => record[1]).reduce((acc, curr) => acc + curr, 0) / baselineRecords.length;
 
     // Get the current user set thresholds
-    const userUpper = userSettings.upperHRVState[0];
-    const userLower = userSettings.lowerHRVState[0];
+    const {value: rawUpperHrv} = await Preferences.get({key: UPPER_HRV});
+    const userUpper = Number(rawUpperHrv || "200");
+    
+    const {value: rawLowerHrv} = await Preferences.get({key: LOWER_HRV});
+    const userLower = Number(rawLowerHrv || "0");
     
     // Colors corresponsing to each record
     const colors = values.map( (HRV) => {

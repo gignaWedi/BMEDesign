@@ -1,11 +1,10 @@
 import { IonButton, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonPage, IonRow, IonText, IonTitle, IonToolbar } from "@ionic/react";
-import { Settings, StressState } from "../App";
 //@ts-ignore
 import LockScreen from 'react-lock-screen';
 import { useState } from "react";
 import './HomeScreen.css';
 
-const HomeScreen: React.FC<{userSettings:Settings, userState: StressState}>  = ({userSettings, userState}) => {
+const HomeScreen: React.FC<{stressState: number}>  = ({stressState}) => {
   
   return (
     <IonPage>
@@ -21,7 +20,7 @@ const HomeScreen: React.FC<{userSettings:Settings, userState: StressState}>  = (
           <IonRow style={{"flexGrow":2, "alignItems":"flex-start"}}>
             <IonCol>
               <IonCard className="ion-padding">
-                <h1>{userState[0] == 1? "Stressed": userState[0] == -1? "Fatigued":"Normal"}</h1>
+                <h1>{stressState == 1? "Stressed": stressState  == -1? "Fatigued":"Normal"}</h1>
               </IonCard>
             </IonCol>
           </IonRow>
