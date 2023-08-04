@@ -15,7 +15,7 @@ import GraphTab from './pages/GraphTab';
 import AdviceTab from './pages/AdviceTab';
 import SettingsTab from './pages/SettingsTab';
 import { useState, useEffect } from 'react';
-import { fetchRecords } from './hooks/DataHook';
+import { dataHook, fetchRecords } from './hooks/DataHook';
 import { Filesystem, Encoding, Directory } from '@capacitor/filesystem';
 
 /* Core CSS required for Ionic components to work properly */
@@ -50,6 +50,7 @@ const App: React.FC = () => {
   const userState = useState<number>();
 
   var readjustError = 0;
+  var timeoutID: NodeJS.Timeout|undefined = undefined;
   
   const hrvCallback = async (rawRecord:DataView): Promise<void> => {
     await storeRecord(rawRecord);
@@ -57,7 +58,7 @@ const App: React.FC = () => {
   };
   
   const storeRecord = async (rawRecord:DataView): Promise<void> => {
-    const timestamp = rawRecord.getInt32(0, true);
+    const timestamp = rawRecord.getUint32(0, true);
     const rmssd = rawRecord.getFloat32(4, true).toFixed(2).padStart(6);
 
     const record = `${timestamp} ${rmssd}\n`;
@@ -94,7 +95,6 @@ const App: React.FC = () => {
         encoding: Encoding.UTF8
       });
     }
-
   }
   
   const determineUserState = async (): Promise<void> => {
@@ -118,6 +118,33 @@ const App: React.FC = () => {
     else
       userState[1](0);
   }
+
+  const errorCallback = async (rawError: DataView): Promise<void> => {
+    const errorCode = rawError.getUint8(0);
+
+    if (errorCode == 1) {
+      readjustError += 1;
+
+      if (readjustError >= 5) {
+        // TODO local notif if 5 readjust error
+        clearTimeout(timeoutID);
+      }
+
+      if (readjustError == 1){
+        timeoutID = setTimeout(
+          () => {
+            readjustError = 0;
+            timeoutID = undefined
+          },
+          60*60
+        )
+      }
+    }
+    
+    console.error('Error Code', errorCode);
+  }
+
+  useEffect(() => {dataHook([hrvCallback, errorCallback])}, []);
 
   return (
     <IonApp>
