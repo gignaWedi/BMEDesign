@@ -7,11 +7,21 @@
 }
 
 .react-lock-screen__ui {
-  width: 50vw;
-  height: 50vw;
+  width: 100vw;
+  height: 100vh;
   position: fixed;
   text-align: center;
   padding: 16px;
-  top: calc(50% - 50vw/ 2);
-  left: calc(50% - 50vw / 2);
+  top: calc(50% - 100vh/ 2);
+  left: calc(50% - 100vw / 2);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: end;
+}
+
+.lock {
+  filter: blur(100px);
+  height: 100vh;
+  overflow: hidden;
 }

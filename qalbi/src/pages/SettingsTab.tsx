@@ -1,7 +1,8 @@
-import { IonCol, IonContent, IonGrid, IonHeader, IonInput, IonItem, IonPage, IonRow, IonTitle, IonToggle, IonToolbar } from '@ionic/react';
+import { IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonPage, IonRow, IonTitle, IonToggle, IonToolbar } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import './SettingsTab.css';
 import { Preferences } from '@capacitor/preferences';
+import { checkmark, checkmarkCircleOutline, pencilOutline } from 'ionicons/icons';
 
 const LOWER_HRV = "lower_hrv";
 const UPPER_HRV = "upper_hrv";
@@ -52,6 +53,24 @@ const SettingsTab: React.FC = () => {
               />
             </IonCol>
           </IonRow>
+
+          <IonRow className='setting'>
+            <IonCol size='6' className="ion-text-start">
+              <IonInput
+                placeholder="Old Passcode"
+              />
+              <IonInput
+                placeholder='New Passcode'
+              />
+            </IonCol>
+
+            <IonCol size='6' className="ion-text-end">
+              <IonButton>
+                Change Passcode
+              </IonButton>
+            </IonCol>
+          </IonRow>
+
         </IonGrid>
       </IonContent>
     </IonPage>

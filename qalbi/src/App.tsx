@@ -49,6 +49,7 @@ setupIonicReact();
 const LOWER_HRV = "lower_hrv";
 const UPPER_HRV = "upper_hrv";
 const PASSCODE = "passcode";
+const FIRST_TIME = "first_time";
 
 /*
  * React Functional Component responsible for setting up global states and creating the routing for the device android application.
@@ -223,11 +224,11 @@ const App: React.FC = () => {
         <IonText>
           Welcome
         </IonText>
-        <IonFab vertical="bottom" horizontal='center' slot='fixed'>
-          <IonFabButton onClick={() => {setLoggedIn(true); setLock(false)}}>
-            <IonIcon icon={lockOpenOutline}/>
-          </IonFabButton>
-        </IonFab>
+        
+        <IonButton onClick={() => {setLoggedIn(true); setLock(false)}}>
+          <IonIcon icon={lockOpenOutline}/>
+        </IonButton>
+        
       </div>
     );
   }
@@ -241,6 +242,7 @@ const App: React.FC = () => {
       <LockScreen
         timeout={loggedIn? 1200000: 0}
         ui={getLockScreenUi}
+        className="lock"
       >
 
         <IonReactRouter>
