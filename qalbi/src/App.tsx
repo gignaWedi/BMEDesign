@@ -39,12 +39,18 @@ import './theme/variables.css';
 
 setupIonicReact();
 
+export interface Settings {
+  upperHRVState: [number, React.Dispatch<React.SetStateAction<number>>];
+  lowerHRVState: [number, React.Dispatch<React.SetStateAction<number>>];
+  passcodeState: [String, React.Dispatch<React.SetStateAction<String>>];
+}
+
 const App: React.FC = () => {
   
   const userSettings = {
-    upperHRVState: useState<number>(),
-    lowerHRVState: useState<number>(),
-    passcodeState: useState<number>()
+    upperHRVState: useState<number>(16),
+    lowerHRVState: useState<number>(107),
+    passcodeState: useState<String>("")
   }
 
   const userState = useState<number>();
@@ -111,9 +117,9 @@ const App: React.FC = () => {
     const upperHRV = userSettings.upperHRVState[0];
     const lowerHRV = userSettings.lowerHRVState[0];
 
-    if (sampleHRV > 107 || sampleHRV > 1.15 * baselineHRV || upperHRV != undefined && sampleHRV > upperHRV)
+    if (sampleHRV > 107 || sampleHRV > 1.15 * baselineHRV || sampleHRV > upperHRV)
       userState[1](1);
-    else if (sampleHRV < 16 || sampleHRV < 0.85 * baselineHRV || lowerHRV != undefined && sampleHRV < lowerHRV)
+    else if (sampleHRV < 16 || sampleHRV < 0.85 * baselineHRV || sampleHRV < lowerHRV)
       userState[1](-1);
     else
       userState[1](0);
@@ -152,7 +158,7 @@ const App: React.FC = () => {
         <IonTabs>
           <IonRouterOutlet>
             <Route exact path="/tab1">
-              <GraphTab />
+              <GraphTab userSettings={userSettings} />
             </Route>
             <Route exact path="/tab2">
               <AdviceTab />
