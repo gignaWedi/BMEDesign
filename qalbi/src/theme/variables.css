@@ -76,6 +76,16 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-light-tint: #f5f6f9;
 }
 
+.react-lock-screen__ui {
+  width: 50vw;
+  height: 50vw;
+  position: fixed;
+  text-align: center;
+  padding: 16px;
+  top: calc(50% - 50vw/ 2);
+  left: calc(50% - 50vw / 2);
+}
+
 @media (prefers-color-scheme: dark) {
   /*
    * Dark Colors

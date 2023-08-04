@@ -119,7 +119,7 @@ export const dataHook = async (callbacks:Array<(value:DataView) => void>) => {
         // TODO: Put Local notification
 
         // Reset the dataHook after 30 seconds
-        setTimeout(() => dataHook(callbacks), 30000);
+        //setTimeout(() => dataHook(callbacks), 30000);
     }
 
     // Callback for when the BleClient disconnects. Resets the dataHook.

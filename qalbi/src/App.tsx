@@ -1,22 +1,29 @@
 import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
+  IonButton,
+  IonFab,
+  IonFabButton,
   IonIcon,
   IonLabel,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
   IonTabs,
+  IonText,
   setupIonicReact,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { heartCircleOutline, square, triangle } from 'ionicons/icons';
+import { analyticsOutline, bookmarksOutline, lockOpenOutline, settingsOutline } from 'ionicons/icons';
 import GraphTab from './pages/GraphTab';
 import AdviceTab from './pages/AdviceTab';
 import SettingsTab from './pages/SettingsTab';
+import HomeScreen from './pages/HomeScreen';
 import { useState, useEffect } from 'react';
 import { dataHook, fetchRecords } from './hooks/DataHook';
 import { Filesystem, Encoding, Directory } from '@capacitor/filesystem';
+//@ts-ignore
+import LockScreen from 'react-lock-screen';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -46,6 +53,8 @@ export interface Settings {
   passcodeState: [String, React.Dispatch<React.SetStateAction<String>>];
 }
 
+export type StressState = [number, React.Dispatch<React.SetStateAction<number>>];
+
 /*
  * React Functional Component responsible for setting up global states and creating the routing for the device android application.
  */
@@ -63,7 +72,7 @@ const App: React.FC = () => {
   // 0 : normal
   // -1: fatigued
   // 1: stressed
-  const userState = useState<number>();
+  const userState = useState<number>(0);
 
   /*
    * Callback to trigger whenever a new record is written to the HRV characteristic by the device wearable. 
@@ -210,45 +219,72 @@ const App: React.FC = () => {
     console.error('Error Code', errorCode);
   }
 
-  useEffect(() => {dataHook([hrvCallback, errorCallback])}, []); // Start dataHook
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
+
+  const getLockScreenUi = (setLock:Function) => {
+    
+    if (loggedIn){
+      setLock(false);
+      return (<></>);
+    }
+    return (
+      <div className="react-lock-screen__ui">
+        <IonText>
+          <h1>Welcome</h1>
+        </IonText>
+        <IonFab vertical="bottom" horizontal='center' slot='fixed'>
+          <IonFabButton onClick={() => {setLoggedIn(true); setLock(false)}}>
+            <IonIcon icon={lockOpenOutline}/>
+          </IonFabButton>
+        </IonFab>
+      </div>
+    );
+  }
+
+  useEffect(() => {if (loggedIn) dataHook([hrvCallback, errorCallback])}, [loggedIn]); // Start dataHook
 
   // TODO:  useEffect to send local notification on userState change
 
   return (
     <IonApp>
-      <IonReactRouter>
-        <IonTabs>
-          <IonRouterOutlet>
-            <Route exact path="/tab1">
-              <GraphTab userSettings={userSettings} />
-            </Route>
-            <Route exact path="/tab2">
-              <AdviceTab />
-            </Route>
-            <Route path="/tab3">
-              <SettingsTab />
-            </Route>
-            <Route exact path="/">
-              <Redirect to="/tab1" />
-            </Route>
-          </IonRouterOutlet>
-          <IonTabBar slot="bottom">
-            <IonTabButton tab="tab1" href="/tab1">
-              <IonIcon aria-hidden="true" icon={triangle} />
-              <IonLabel>Tab 1</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="tab2" href="/tab2">
-              <IonIcon aria-hidden="true" icon={heartCircleOutline} />
-              <IonLabel>HRV</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="tab3" href="/tab3">
-              <IonIcon aria-hidden="true" icon={square} />
-              <IonLabel>Tab 3</IonLabel>
-            </IonTabButton>
-          </IonTabBar>
-        </IonTabs>
-      </IonReactRouter>
+      <LockScreen
+        timeout={loggedIn? 1200000: 0}
+        ui={getLockScreenUi}
+      >
+
+        <IonReactRouter>
+          <IonTabs>
+            <IonRouterOutlet>
+              <Route exact path="/tab1">
+                <GraphTab userSettings={userSettings} />
+              </Route>
+              <Route exact path="/tab2">
+                <AdviceTab />
+              </Route>
+              <Route exact path="/tab3">
+                <SettingsTab />
+              </Route>
+              <Route exact path="/">
+                <HomeScreen userSettings={userSettings} userState={userState}/>
+              </Route>
+            </IonRouterOutlet>
+            <IonTabBar slot="bottom">
+              <IonTabButton tab="tab1" href="/tab1">
+                <IonIcon aria-hidden="true" icon={analyticsOutline} />
+              </IonTabButton>
+              <IonTabButton tab="tab2" href="/tab2">
+                <IonIcon aria-hidden="true" icon={bookmarksOutline} />
+              </IonTabButton>
+              <IonTabButton tab="tab3" href="/tab3">
+                <IonIcon aria-hidden="true" icon={settingsOutline} />
+              </IonTabButton>
+            </IonTabBar>
+          </IonTabs>
+        </IonReactRouter>
+
+      </LockScreen>
     </IonApp>
+    
   );
 };
 
