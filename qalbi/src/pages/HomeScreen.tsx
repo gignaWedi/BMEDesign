@@ -13,14 +13,14 @@ const HomeScreen: React.FC<{stressState: number}>  = ({stressState}) => {
           
           <IonRow style={{"flexGrow":1, "alignItems":"flex-end"}}>
             <IonCol>
-              <h1>Your current stress level</h1>
+              Your current stress level
             </IonCol>
           </IonRow>
 
           <IonRow style={{"flexGrow":2, "alignItems":"flex-start"}}>
             <IonCol>
               <IonCard className="ion-padding">
-                <h1>{stressState == 1? "Stressed": stressState  == -1? "Fatigued":"Normal"}</h1>
+                {stressState == 1? "Stressed": stressState  == -1? "Fatigued":"Normal"}
               </IonCard>
             </IonCol>
           </IonRow>

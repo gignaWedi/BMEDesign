@@ -9,9 +9,7 @@ console.log(data);
 const AdviceTab: React.FC = () => {
   
   const [type, setType] = useState<string>("");
-
   const [text, setText] = useState<string>("");
-
 
   useEffect( () => {
     if (Object.keys(data).includes(type)){
@@ -37,22 +35,26 @@ const AdviceTab: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <div className='homepage'>
-          <h1>How would you like to relax?</h1>
+          How would you like to relax?
+          
           <IonButton onClick={() => setType("scent")}>
             <IonIcon icon={flameOutline}/>
-            <h1>Scent</h1>
+            Scent
           </IonButton>
+
           <IonButton onClick={() => setType("water")}>
           <IonIcon icon={waterOutline}/>
-            <h1>Water</h1>
+            Water
           </IonButton>
+          
           <IonButton onClick={() => setType("quote")}>
           <IonIcon icon={chatbubblesOutline}/>
-            <h1>Quote</h1>
+            Quote
           </IonButton>
+          
           <IonButton onClick={() => setType("breath")}>
           <IonIcon icon={pauseCircleOutline}/>
-            <h1>Breath</h1>
+            Breath
           </IonButton>
         </div>
       </IonContent>

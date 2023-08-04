@@ -48,6 +48,7 @@ setupIonicReact();
 
 const LOWER_HRV = "lower_hrv";
 const UPPER_HRV = "upper_hrv";
+const PASSCODE = "passcode";
 
 /*
  * React Functional Component responsible for setting up global states and creating the routing for the device android application.
@@ -220,7 +221,7 @@ const App: React.FC = () => {
     return (
       <div className="react-lock-screen__ui">
         <IonText>
-          <h1>Welcome</h1>
+          Welcome
         </IonText>
         <IonFab vertical="bottom" horizontal='center' slot='fixed'>
           <IonFabButton onClick={() => {setLoggedIn(true); setLock(false)}}>
