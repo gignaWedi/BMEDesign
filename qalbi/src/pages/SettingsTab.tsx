@@ -1,6 +1,12 @@
 import { IonCol, IonContent, IonGrid, IonHeader, IonInput, IonItem, IonPage, IonRow, IonTitle, IonToggle, IonToolbar } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import './SettingsTab.css';
+import { Preferences } from '@capacitor/preferences';
+
+const LOWER_HRV = "lower_hrv";
+const UPPER_HRV = "upper_hrv";
+const PASSCODE = "passcode";
+const NOTIFICATIONS = "notifications";
 
 const SettingsTab: React.FC = () => {
   return (

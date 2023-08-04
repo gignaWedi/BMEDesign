@@ -22,6 +22,7 @@ import HomeScreen from './pages/HomeScreen';
 import { useState, useEffect } from 'react';
 import { dataHook, fetchRecords } from './hooks/DataHook';
 import { Filesystem, Encoding, Directory } from '@capacitor/filesystem';
+import { Preferences } from '@capacitor/preferences';
 //@ts-ignore
 import LockScreen from 'react-lock-screen';
 
@@ -43,7 +44,6 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-
 setupIonicReact();
 
 // Interface for the userSettings prop
