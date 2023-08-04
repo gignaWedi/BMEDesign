@@ -86,6 +86,8 @@ export const dataHook = async (callbacks:Array<(value:DataView) => void>) => {
 
     } catch (error) {
         console.error(error);
+        
+        setTimeout(() => dataHook(callbacks), 30000);
     }
 
     function onDisconnect(): void {
