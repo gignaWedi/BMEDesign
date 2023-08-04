@@ -39,36 +39,63 @@ import './theme/variables.css';
 
 setupIonicReact();
 
+// Interface for the userSettings prop
 export interface Settings {
   upperHRVState: [number, React.Dispatch<React.SetStateAction<number>>];
   lowerHRVState: [number, React.Dispatch<React.SetStateAction<number>>];
   passcodeState: [String, React.Dispatch<React.SetStateAction<String>>];
 }
 
+/*
+ * React Functional Component responsible for setting up global states and creating the routing for the device android application.
+ */
+
 const App: React.FC = () => {
   
+  // userSettings is a collection of useState arrays for each possible setting
   const userSettings = {
     upperHRVState: useState<number>(16),
     lowerHRVState: useState<number>(107),
     passcodeState: useState<String>("")
   }
 
+  // userState is the user's current stress state
+  // 0 : normal
+  // -1: fatigued
+  // 1: stressed
   const userState = useState<number>();
 
-  var readjustError = 0;
-  var timeoutID: NodeJS.Timeout|undefined = undefined;
-  
+  /*
+   * Callback to trigger whenever a new record is written to the HRV characteristic by the device wearable. 
+   * rawRecord is the received value from the HRV characteristic
+   */
   const hrvCallback = async (rawRecord:DataView): Promise<void> => {
     await storeRecord(rawRecord);
     await determineUserState();
   };
   
+  /*
+   * Stores an HRV record given by the raw bits of rawRecord. 
+   * rawError is the received value from the HRV characteristic, following the format in design specification 4.5.1.
+   */
   const storeRecord = async (rawRecord:DataView): Promise<void> => {
-    const timestamp = rawRecord.getUint32(0, true);
-    const rmssd = rawRecord.getFloat32(4, true).toFixed(2).padStart(6);
+    /* 
+     * Parse the HRV Characteristic
+     * 
+     * UUUUHHHH
+     * U: Unix timestamp: uint32
+     * H: HRV metric: float32
+     * 
+     * Arduino is little endian, so read and write to the DataView with the little endian flag set for multibyte datatypes.
+     */
 
+    const timestamp = rawRecord.getUint32(0, true);
+    const rmssd = rawRecord.getFloat32(4, true).toFixed(2).padStart(6, '0');
+
+    // Format the record
     const record = `${timestamp} ${rmssd}\n`;
 
+    // Get the record's year, month, and day to make the HRV day data file filename
     const currentDatetime = new Date(timestamp);
         
     const year = currentDatetime.getUTCFullYear().toString().padStart(4, '0');
@@ -77,6 +104,7 @@ const App: React.FC = () => {
 
     const filename = `HRV-${year}${month}${day}.txt`;
 
+    // Attempt to read the day data file.
     try {
       const contents = await Filesystem.readFile({
         path: filename,
@@ -84,6 +112,7 @@ const App: React.FC = () => {
         encoding: Encoding.UTF8
       });
       
+      // if the record is not already in the data file, append the record. 
       if (!contents.data.includes(record)){
         await Filesystem.appendFile({
           path: filename,
@@ -94,6 +123,8 @@ const App: React.FC = () => {
       }
 
     } catch (error) {
+      
+      // Write to the day datafile to create a new file.
       await Filesystem.writeFile({
         path: filename,
         data: record,
@@ -103,19 +134,29 @@ const App: React.FC = () => {
     }
   }
   
+  /*
+   * Sets the userState global state based on HRV metrics (see requirements 3.2.2.1.4-3.2.2.1.8, 3.2.2.2.1)
+   */
   const determineUserState = async (): Promise<void> => {
-    const baselineRecords = await fetchRecords(3 * 24 * 60 * 60);
-    const sampleRecords = await fetchRecords(3 * 60 * 60);
+    const baselineRecords = await fetchRecords(3 * 24 * 60 * 60); // Records from 3 days ago to now
+    const sampleRecords = await fetchRecords(3 * 60 * 60); // Records from 3 hours ago to now
 
+    // If there are no records, end method to avoid division by zero
     if (baselineRecords.length <= 0 || sampleRecords.length <= 0){
       return;
     }
 
+    // Get the mean of each set of records to serve as the respective HRV metric.
     const baselineHRV = baselineRecords.map((record) => record[1]).reduce((acc, curr) => acc + curr, 0) / baselineRecords.length;
     const sampleHRV = sampleRecords.map((record) => record[1]).reduce((acc, curr) => acc + curr, 0) / baselineRecords.length;
 
+    // Get the current user set thresholds
     const upperHRV = userSettings.upperHRVState[0];
     const lowerHRV = userSettings.lowerHRVState[0];
+
+    // If the user is "stressed", write 1 to the userState
+    // Else if the user is "fatigued", write -1 to the userState
+    // Else write 0 to the user state
 
     if (sampleHRV > 107 || sampleHRV > 1.15 * baselineHRV || sampleHRV > upperHRV)
       userState[1](1);
@@ -125,17 +166,35 @@ const App: React.FC = () => {
       userState[1](0);
   }
 
+  var readjustError = 0; // number of readjust Errors in the last hour
+  var timeoutID: NodeJS.Timeout|undefined = undefined; // timeout to handle clearing readjustError
+  
+  /*
+   * Handles error codes sent from the device wearable to the Error characteristic. 
+   * rawError is the received value from the characteristic, following the format in design specification 4.5.1.
+   */
   const errorCallback = async (rawError: DataView): Promise<void> => {
+    
+    /* 
+     * Parse the Error Characteristic
+     * 
+     * Z
+     * Z: Error code: uint8
+     */
+
     const errorCode = rawError.getUint8(0);
 
+    // If the errorCode is 1, a readjust error has occurred
     if (errorCode == 1) {
-      readjustError += 1;
+      readjustError += 1; // Increment readjust error counter
 
+      // If 5 readjustErrors have occurred in the last hour, set a local notification and reset the timeout
       if (readjustError >= 5) {
-        // TODO local notif if 5 readjust error
+        // TODO: local notif if 5 readjust error
         clearTimeout(timeoutID);
       }
 
+      // If this is the first readjust error, set a timeout to clear the reajustError value to 0 after an hour.
       if (readjustError == 1){
         timeoutID = setTimeout(
           () => {
@@ -146,11 +205,12 @@ const App: React.FC = () => {
         )
       }
     }
-    
+
+    // Log the error code
     console.error('Error Code', errorCode);
   }
 
-  useEffect(() => {dataHook([hrvCallback, errorCallback])}, []);
+  useEffect(() => {dataHook([hrvCallback, errorCallback])}, []); // Start dataHook
 
   return (
     <IonApp>
