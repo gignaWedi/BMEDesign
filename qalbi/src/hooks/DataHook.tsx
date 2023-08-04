@@ -111,7 +111,7 @@ export const fetchRecords = async(timePeriod:number): Promise<number[][]> => {
         const currentDatetime = new Date(currentTimestamp);
         
         const year = currentDatetime.getUTCFullYear().toString().padStart(4, '0');
-        const month = (currentDatetime.getUTCMonth()+1) .toString().padStart(2, '0');
+        const month = (currentDatetime.getUTCMonth()+1).toString().padStart(2, '0');
         const day = currentDatetime.getUTCDate().toString().padStart(2, '0');
 
         const filename = `HRV-${year}${month}${day}.txt`;
