@@ -1,4 +1,4 @@
-import { IonCard, IonCol, IonContent, IonGrid, IonPage, IonRow, useIonRouter } from "@ionic/react";
+import { IonCard, IonCol, IonContent, IonGrid, IonHeader, IonPage, IonRow, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
 import './HomeScreen.css';
 import { App } from "@capacitor/app";
 
@@ -15,6 +15,11 @@ const HomeScreen: React.FC<{stressState: number}>  = ({stressState}) => {
   
   return (
     <IonPage>
+      <IonHeader>
+        <IonToolbar className='ion-text-center'>
+          <IonTitle>Traquil+</IonTitle>
+        </IonToolbar>
+      </IonHeader>
       <IonContent fullscreen>
         <IonGrid className="homepage">
           
