@@ -1,5 +1,4 @@
-import { IonButton, IonButtons, IonCard, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
+import { IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonPage, IonRow, IonTitle, IonToolbar, useIonLoading } from '@ionic/react';
 import './GraphTab.css';
 import { useState, useEffect } from 'react';
 
@@ -52,11 +51,13 @@ const GraphTab: React.FC = () => {
 
   const [timeframe, setTimeframe] = useState<number>(0);
 
+  const [present, dismiss] = useIonLoading(); // Loading box when getting graph data
+
   /*
    * Sets the graphData based on the HRV records that are within the current timeframe.
    */ 
   const getChartData = async (): Promise<void> => {
-    // TODO: Loading screen while loading data
+    present("Loading Chart Data"); // Show loading box at start of function
 
     var startTime = new Date(); // Start time to compare record timestamps to.
     var timePeriod: number; // Number of seconds to look back for records
@@ -74,6 +75,7 @@ const GraphTab: React.FC = () => {
     else {
       // If the timeframe is not 0, 1, or 2, throw an error
       console.error("Invalid Timeframe Selection");
+      dismiss();
       return;
     }
 
@@ -86,6 +88,7 @@ const GraphTab: React.FC = () => {
         labels: [],
         datasets: []
       });
+      dismiss();
       return;
     }
 
@@ -137,6 +140,17 @@ const GraphTab: React.FC = () => {
 
     const colors = await colorRecords(values); // Get the colors according to their value.
 
+    // If no colors, throw error
+    if (colors.length <= 0) {
+      console.error("No colors")
+      setChartData({
+        labels: [],
+        datasets: []
+      });
+      dismiss();
+      return;
+    }
+
     // Set chartData to a chart.js data object
     const data = {
       labels: friendly_labels,
@@ -153,6 +167,7 @@ const GraphTab: React.FC = () => {
     };
 
     setChartData(data);
+    dismiss();
     console.log(data);
   }
 

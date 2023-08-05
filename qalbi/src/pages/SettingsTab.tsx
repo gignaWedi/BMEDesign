@@ -1,8 +1,6 @@
-import { IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonPage, IonRow, IonTitle, IonToast, IonToggle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
+import { IonButton, IonCol, IonContent, IonGrid, IonHeader, IonInput, IonPage, IonRow, IonTitle, IonToast, IonToggle, IonToolbar, useIonLoading } from '@ionic/react';
 import './SettingsTab.css';
 import { Preferences } from '@capacitor/preferences';
-import { checkmark, checkmarkCircleOutline, pencilOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 
 // Preference IDs for each setting
@@ -28,13 +26,21 @@ const SettingsTab: React.FC = () => {
 
   const [message, setMessage] = useState(""); // State holding toast message to confirm submission
 
+  const [present, dismiss] = useIonLoading(); // Loading box when loading settings
+
   // Load all settings from preferences
   const getSettings = async () => {
+    present({message:"Loading Settings"}); // Show Loading messafe
+    
+    // Get all settings from preferences
     setPasscode((await Preferences.get({key:PASSCODE})).value || "");
     setUpperHRV(Number((await Preferences.get({key:UPPER_HRV})).value  || "107" ));
     setLowerHRV(Number((await Preferences.get({key:LOWER_HRV})).value  || "16" ));
     setNotifications(Boolean((await Preferences.get({key:NOTIFICATIONS})).value  || ""));
+    
+    // Set ready state and dismiss loading
     setReady(true);
+    dismiss();
   };
   
   // On render, load all settings
@@ -61,7 +67,7 @@ const SettingsTab: React.FC = () => {
     () => console.log(passcode, upperHRV, lowerHRV, notifications), [passcode, upperHRV, lowerHRV, notifications]
   )
 
-  // TODO: ensure valid 
+  // TODO: ensure valid HRV threshold
   // Save local changes to preferences
   const saveChanges = () => {
     // Pull values from HTML elements and store in each state
@@ -130,9 +136,8 @@ const SettingsTab: React.FC = () => {
           message={message}
           position='top'
         ></IonToast>
-        
-        
-        {ready && <IonGrid className="homepage">
+
+        <IonGrid className="homepage">
           <IonRow className='setting'>
             <IonCol size='10' className="ion-text-start">
               Enable Notifications
@@ -209,10 +214,11 @@ const SettingsTab: React.FC = () => {
             </IonCol>
           </IonRow>
 
-        </IonGrid>}
+        </IonGrid>
       </IonContent>
     </IonPage>
   );
 };
 
 export default SettingsTab;
+

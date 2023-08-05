@@ -1,18 +1,18 @@
-import { Redirect, Route, useHistory } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import {
   IonApp,
   IonButton,
   IonFab,
   IonFabButton,
   IonIcon,
-  IonLabel,
+  IonInput,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
   IonTabs,
   IonText,
   setupIonicReact,
-  useIonRouter,
+  useIonLoading,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { analyticsOutline, bluetoothOutline, bookmarksOutline, homeOutline, lockOpenOutline, settingsOutline } from 'ionicons/icons';
@@ -24,9 +24,6 @@ import { useState, useEffect } from 'react';
 import { dataHook, fetchRecords } from './hooks/DataHook';
 import { Filesystem, Encoding, Directory } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
-import { App } from '@capacitor/app';
-//@ts-ignore
-import LockScreen from 'react-lock-screen';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -98,7 +95,7 @@ const AppRoute: React.FC = () => {
     await determineUserState();
   };
 
-  useEffect(() => {testHrv()}, []);
+  useEffect(() => {testHrv();  loadPasscode();}, []);
 
   /*
    * Callback to trigger whenever a new record is written to the HRV characteristic by the device wearable. 
@@ -252,83 +249,95 @@ const AppRoute: React.FC = () => {
   }
 
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [present, dismiss] = useIonLoading();
+  const [passcode, setPasscode] = useState<string>();
 
-  const getLockScreenUi = (setLock:Function) => {
-    
-    if (loggedIn){
-      setLock(false);
-      return (<></>);
-    }
-    return (
-      <div className="react-lock-screen__ui">
-        <IonText>
-          Welcome
-        </IonText>
-        
-        <IonButton onClick={() => {setLoggedIn(true); setLock(false)}}>
-          <IonIcon icon={lockOpenOutline}/>
-        </IonButton>
-        
-      </div>
-    );
+  const loadPasscode = async () => {
+    present();
+    setPasscode((await Preferences.get({key:PASSCODE})).value || "");
+    dismiss();
   }
 
-  useEffect(() => {if (loggedIn) dataHook([hrvCallback, errorCallback])}, [loggedIn]); // Start dataHook
+  useEffect(() => {
+    if (passcode == "") {
+      setLoggedIn(true); 
+      dismiss();
+    }
+  }, [passcode])
+
+  useEffect(() => {if (loggedIn) dataHook([hrvCallback, errorCallback])}, [loggedIn]); // Start dataHook on login
+
+  const handleLogin = () => {
+
+  }
 
   // TODO:  useEffect to send local notification on userState change
 
   return (
     <IonApp>
-      <LockScreen
-        timeout={loggedIn? 1200000: 0}
-        ui={getLockScreenUi}
-        className="lock"
-      >
+      {!loggedIn? passcode===undefined? undefined: passcode==""? undefined:
+        <div className="react-lock-screen__ui">
+          <IonText>
+            Welcome
+          </IonText>
+          
+          <IonInput 
+            placeholder="Enter Your Passcode."
+            id='passcode-input'
+          />
+          
+          <IonButton onClick={() => {setLoggedIn(true)}}>
+            <IonIcon icon={lockOpenOutline}/>
+          </IonButton>
+        </div> 
+        
+        :
+        
+        <>
+          <IonReactRouter>
+            <IonTabs>
+              <IonRouterOutlet>
+                <Route exact path="/tab1">
+                  <GraphTab />
+                </Route>
+                <Route exact path="/tab2">
+                  <AdviceTab />
+                </Route>
+                <Route exact path="/tab3">
+                  <SettingsTab />
+                </Route>
+                <Route exact path="/">
+                  <HomeScreen stressState={stressState}/>
+                </Route>
+              </IonRouterOutlet>
+              <IonTabBar slot="bottom">
+                <IonTabButton tab="home" href="/">
+                  <IonIcon aria-hidden="true" icon={homeOutline} />
+                </IonTabButton>
+                <IonTabButton tab="tab1" href="/tab1">
+                  <IonIcon aria-hidden="true" icon={analyticsOutline} />
+                </IonTabButton>
+                <IonTabButton></IonTabButton>
+                <IonTabButton tab="tab2" href="/tab2">
+                  <IonIcon aria-hidden="true" icon={bookmarksOutline} />
+                </IonTabButton>
+                <IonTabButton tab="tab3" href="/tab3">
+                  <IonIcon aria-hidden="true" icon={settingsOutline} />
+                </IonTabButton>
+              </IonTabBar>
+            </IonTabs>
+          </IonReactRouter>
 
-        <IonReactRouter>
-          <IonTabs>
-            <IonRouterOutlet>
-              <Route exact path="/tab1">
-                <GraphTab />
-              </Route>
-              <Route exact path="/tab2">
-                <AdviceTab />
-              </Route>
-              <Route exact path="/tab3">
-                <SettingsTab />
-              </Route>
-              <Route exact path="/">
-                <HomeScreen stressState={stressState}/>
-              </Route>
-            </IonRouterOutlet>
-            <IonTabBar slot="bottom">
-              <IonTabButton tab="home" href="/">
-                <IonIcon aria-hidden="true" icon={homeOutline} />
-              </IonTabButton>
-              <IonTabButton tab="tab1" href="/tab1">
-                <IonIcon aria-hidden="true" icon={analyticsOutline} />
-              </IonTabButton>
-              <IonTabButton></IonTabButton>
-              <IonTabButton tab="tab2" href="/tab2">
-                <IonIcon aria-hidden="true" icon={bookmarksOutline} />
-              </IonTabButton>
-              <IonTabButton tab="tab3" href="/tab3">
-                <IonIcon aria-hidden="true" icon={settingsOutline} />
-              </IonTabButton>
-            </IonTabBar>
-          </IonTabs>
-        </IonReactRouter>
-
-        <IonFab vertical="bottom" horizontal="center" slot="fixed">
-          <IonFabButton
-            onClick={() => {console.log("hi!"); dataHook([hrvCallback, errorCallback])}}
-          >
-            <IonIcon aria-hidden="true" icon={bluetoothOutline} />
-          </IonFabButton>
-        </IonFab>
-      </LockScreen>
+          <IonFab vertical="bottom" horizontal="center" slot="fixed">
+            <IonFabButton
+              onClick={() => {console.log("hi!"); dataHook([hrvCallback, errorCallback])}}
+            >
+              <IonIcon aria-hidden="true" icon={bluetoothOutline} />
+            </IonFabButton>
+          </IonFab>
+        </>
+      }
     </IonApp>
-    
   );
 };
 
