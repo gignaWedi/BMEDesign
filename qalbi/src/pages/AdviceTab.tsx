@@ -1,6 +1,6 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonFab, IonFabButton, IonIcon, IonButton, IonToast } from '@ionic/react';
 import './AdviceTab.css';
-import { chatbubblesOutline, flameOutline, pauseCircleOutline, waterOutline } from 'ionicons/icons';
+import { bulbOutline, chatbubblesOutline, flameOutline, pauseCircleOutline, waterOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import data from './Advice.json';
 
@@ -29,7 +29,7 @@ const AdviceTab: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar className='ion-text-center'>
           <IonTitle>Advice</IonTitle>
         </IonToolbar>
       </IonHeader>
@@ -58,8 +58,34 @@ const AdviceTab: React.FC = () => {
           </IonButton>
         </div>
       </IonContent>
+
+      <IonToast
+        message={toTitleCase(type) + ":\n" + text}
+        duration={10000}
+        buttons={[
+          {
+            text: 'Dismiss',
+            role: 'cancel',
+          },
+        ]}
+        layout="stacked"
+        icon={bulbOutline}
+        isOpen={text != ""}
+        onDidDismiss={() => {setText(""); setType("")}}
+        position='middle'
+      ></IonToast>
+
     </IonPage>
   );
 };
+
+function toTitleCase(str:string) {
+  return str.replace(
+    /\w\S*/g,
+    function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    }
+  );
+}
 
 export default AdviceTab;

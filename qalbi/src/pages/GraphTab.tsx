@@ -203,7 +203,7 @@ const GraphTab: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar className='ion-text-center'>
           <IonTitle>HRV Readings</IonTitle>
         </IonToolbar>
       </IonHeader>

@@ -13,7 +13,7 @@ const SettingsTab: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar className='ion-text-center'>
           <IonTitle>Settings</IonTitle>
         </IonToolbar>
       </IonHeader>
