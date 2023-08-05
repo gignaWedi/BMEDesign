@@ -7,12 +7,6 @@ import { App } from "@capacitor/app";
  * The content depends on the current userState.
  */
 const HomeScreen: React.FC<{stressState: number}>  = ({stressState}) => {
-  // Back button goes back home
-  const router = useIonRouter();
-  App.addListener("backButton", (event) => {
-    console.log(router.push("/"));
-  })
-  
   return (
     <IonPage>
       <IonHeader>

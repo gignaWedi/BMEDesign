@@ -41,7 +41,7 @@ const AdviceTab: React.FC = () => {
           isOpen={text != ""}
           onDidDismiss={() => {setText(""); setType("")}}
         >
-          <div className='popover ion-text-center'>
+          <div className='popover ion-text-center ion-paddin'>
             <IonIcon icon={bulbOutline}/>
             <IonText>
               {toTitleCase(type) + ":\n\n" + text}
