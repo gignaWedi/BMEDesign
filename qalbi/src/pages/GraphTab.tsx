@@ -228,7 +228,9 @@ const GraphTab: React.FC = () => {
                         title: {
                           display: true,
                           text: timeframe == 0? "Minutes Ago": timeframe == 1? "Hours Ago" : "Days Ago"
-                        }
+                        },
+                        min: timeframe == 0? -70: timeframe == 1? -25: -8,
+                        max: 0
                       },
                       y :{
                         title : {
