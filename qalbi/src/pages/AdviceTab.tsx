@@ -4,13 +4,15 @@ import { bulbOutline, chatbubblesOutline, flameOutline, pauseCircleOutline, wate
 import { useEffect, useState } from 'react';
 import data from './Advice.json';
 
-console.log(data);
-
+/*
+ * React Functional Component responsible for creating the front end of the advice tab for the user.
+ */
 const AdviceTab: React.FC = () => {
   
-  const [type, setType] = useState<string>("");
-  const [text, setText] = useState<string>("");
+  const [type, setType] = useState<string>(""); // State for the type of advice selected
+  const [text, setText] = useState<string>(""); // State for the toast message
 
+  // On type selection, load a random piece of corresponding advice from the Advice json
   useEffect( () => {
     if (Object.keys(data).includes(type)){
       //@ts-ignore
@@ -79,6 +81,7 @@ const AdviceTab: React.FC = () => {
   );
 };
 
+// Make strings title case
 function toTitleCase(str:string) {
   return str.replace(
     /\w\S*/g,

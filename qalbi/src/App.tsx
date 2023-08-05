@@ -15,7 +15,7 @@ import {
   useIonRouter,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { analyticsOutline, bookmarksOutline, lockOpenOutline, settingsOutline } from 'ionicons/icons';
+import { analyticsOutline, bluetoothOutline, bookmarksOutline, homeOutline, lockOpenOutline, settingsOutline } from 'ionicons/icons';
 import GraphTab from './pages/GraphTab';
 import AdviceTab from './pages/AdviceTab';
 import SettingsTab from './pages/SettingsTab';
@@ -56,7 +56,6 @@ const FIRST_TIME = "first_time";
 /*
  * React Functional Component responsible for setting up global states and creating the routing for the device android application.
  */
-
 const AppRoute: React.FC = () => {
 
   // userState is the user's current stress state
@@ -303,9 +302,13 @@ const AppRoute: React.FC = () => {
               </Route>
             </IonRouterOutlet>
             <IonTabBar slot="bottom">
+              <IonTabButton tab="home" href="/">
+                <IonIcon aria-hidden="true" icon={homeOutline} />
+              </IonTabButton>
               <IonTabButton tab="tab1" href="/tab1">
                 <IonIcon aria-hidden="true" icon={analyticsOutline} />
               </IonTabButton>
+              <IonTabButton></IonTabButton>
               <IonTabButton tab="tab2" href="/tab2">
                 <IonIcon aria-hidden="true" icon={bookmarksOutline} />
               </IonTabButton>
@@ -316,6 +319,13 @@ const AppRoute: React.FC = () => {
           </IonTabs>
         </IonReactRouter>
 
+        <IonFab vertical="bottom" horizontal="center" slot="fixed">
+          <IonFabButton
+            onClick={() => {console.log("hi!"); dataHook([hrvCallback, errorCallback])}}
+          >
+            <IonIcon aria-hidden="true" icon={bluetoothOutline} />
+          </IonFabButton>
+        </IonFab>
       </LockScreen>
     </IonApp>
     

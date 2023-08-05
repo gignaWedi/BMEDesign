@@ -18,6 +18,8 @@ import { refreshOutline } from 'ionicons/icons';
 import { fetchRecords } from '../hooks/DataHook';
 
 import { Preferences } from '@capacitor/preferences';
+
+// Preference IDs for user set HRV threshold values
 const LOWER_HRV = "lower_hrv";
 const UPPER_HRV = "upper_hrv";
 
@@ -93,14 +95,18 @@ const GraphTab: React.FC = () => {
       
       var divisor: number;
       var multiplier: number = 1;
+      
+      // Split by 5 min intervals if past hour selected
       if (timeframe == 0) {
         divisor = 5*60*1000;
         multiplier = 5;
       }
+      // Split by even hour if past day selected
       else if (timeframe == 1){
         divisor = 2*60*60*1000;
         multiplier = 2;
       }
+      // Split by day if last week selected
       else {
         divisor = 24*60*60*1000;
       }
@@ -120,6 +126,7 @@ const GraphTab: React.FC = () => {
       values[i] = vals.reduce((acc, curr) => acc + curr, 0)/vals.length;
     })
 
+    // Collect data points together in data object to pass as a data set
     const aggregatedRecords = unique_labels.map((label, i) => ({x: label, y: values[i]}));
 
     const colors = await colorRecords(values); // Get the colors according to their value.

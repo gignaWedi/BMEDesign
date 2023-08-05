@@ -2,7 +2,7 @@ import { BleClient, numberToUUID } from "@capacitor-community/bluetooth-le";
 import { Preferences } from "@capacitor/preferences";
 import { Directory, Filesystem, Encoding } from "@capacitor/filesystem";
 
-const DEVICE_ID = "device_id" // Preference for Device Wearable ID.
+const DEVICE_ID = "device_id" // Preference ID for Device Wearable ID.
 
 // BLE Service and Characteristic UUIDs
 const HRV_SERVICE = numberToUUID(0x180F); // Bluetooth Low Energy HRV Metric Service UUID

@@ -1,10 +1,11 @@
-import { IonButton, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonPage, IonRow, IonText, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
-//@ts-ignore
-import LockScreen from 'react-lock-screen';
-import { useState } from "react";
+import { IonCard, IonCol, IonContent, IonGrid, IonPage, IonRow, useIonRouter } from "@ionic/react";
 import './HomeScreen.css';
 import { App } from "@capacitor/app";
 
+/*
+ * React Functional Component responsible for creating the front end of the home screen for the user. 
+ * The content depends on the current userState.
+ */
 const HomeScreen: React.FC<{stressState: number}>  = ({stressState}) => {
   // Back button goes back home
   const router = useIonRouter();
