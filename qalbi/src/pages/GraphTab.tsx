@@ -40,8 +40,7 @@ const GraphTab: React.FC = () => {
   // Stateful variable for the current chart.js data
   const [chartData, setChartData] = useState<any>({
     labels: [],
-    datasets: [{
-    }]
+    datasets: []
   });
 
   // Stateful variable for the timeframe the user selects
@@ -83,8 +82,7 @@ const GraphTab: React.FC = () => {
       console.error("No records")
       setChartData({
         labels: [],
-        datasets: [{
-        }]
+        datasets: []
       });
       return;
     }
@@ -214,14 +212,20 @@ const GraphTab: React.FC = () => {
                     },
                     scales : {
                       x : {
+                        title: {
+                          display: true,
+                          text: timeframe == 0? "Minutes Ago": timeframe == 1? "Hours Ago" : "Days Ago"
+                        }
                       },
                       y :{
                         title : {
                           display: true,
                           text: "HRV"
                         },
-                        min: 0,
-                        max: 200 
+                        //@ts-ignore
+                        min: 40, 
+                        //@ts-ignore
+                        max: 140
                       }
                     }
                   }} data={chartData}/>
