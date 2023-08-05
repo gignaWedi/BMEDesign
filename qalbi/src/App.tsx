@@ -91,6 +91,7 @@ const AppRoute: React.FC = () => {
     await determineUserState();
   };
 
+  const router = useIonRouter();
   useEffect(() => {
     testHrv();  
     loadPasscode();
@@ -98,12 +99,6 @@ const AppRoute: React.FC = () => {
       console.log(router.push("/"));
     })
   }, []);
-
-  // Back button goes back home
-  const router = useIonRouter();
-  App.addListener("backButton", (event) => {
-    console.log(router.push("/"));
-  })
 
   // userState is the user's current stress state
   // 0 : normal
@@ -268,7 +263,7 @@ const AppRoute: React.FC = () => {
 
   // Load the passcode
   const loadPasscode = async () => {
-    present();
+    present("Getting Creds");
     setPasscode((await Preferences.get({key:PASSCODE})).value || "");
     dismiss();
   }
