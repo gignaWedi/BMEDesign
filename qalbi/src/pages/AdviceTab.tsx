@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonFab, IonFabButton, IonIcon, IonButton, IonToast } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonFab, IonFabButton, IonIcon, IonButton, IonToast, IonPopover, IonText } from '@ionic/react';
 import './AdviceTab.css';
 import { bulbOutline, chatbubblesOutline, flameOutline, pauseCircleOutline, waterOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
@@ -36,6 +36,19 @@ const AdviceTab: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
+        
+        <IonPopover
+          isOpen={text != ""}
+          onDidDismiss={() => {setText(""); setType("")}}
+        >
+          <div className='popover ion-text-center'>
+            <IonIcon icon={bulbOutline}/>
+            <IonText>
+              {toTitleCase(type) + ":\n\n" + text}
+            </IonText>
+          </div>
+        </IonPopover>
+        
         <div className='homepage'>
           How would you like to relax?
           
@@ -61,21 +74,7 @@ const AdviceTab: React.FC = () => {
         </div>
       </IonContent>
 
-      <IonToast
-        message={toTitleCase(type) + ":\n" + text}
-        duration={10000}
-        buttons={[
-          {
-            text: 'Dismiss',
-            role: 'cancel',
-          },
-        ]}
-        layout="stacked"
-        icon={bulbOutline}
-        isOpen={text != ""}
-        onDidDismiss={() => {setText(""); setType("")}}
-        position='middle'
-      ></IonToast>
+      
 
     </IonPage>
   );
