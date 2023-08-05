@@ -54,13 +54,8 @@ const FIRST_TIME = "first_time";
  * React Functional Component responsible for setting up global states and creating the routing for the device android application.
  */
 const AppRoute: React.FC = () => {
-
-  // userState is the user's current stress state
-  // 0 : normal
-  // -1: fatigued
-  // 1: stressed
-  const [stressState, setStressState] = useState<number>(0);
-
+   
+  // Test Code!
   const testHrv = async () => {
     const {files} = await Filesystem.readdir({
       path:"",
@@ -96,6 +91,12 @@ const AppRoute: React.FC = () => {
   };
 
   useEffect(() => {testHrv();  loadPasscode();}, []);
+
+  // userState is the user's current stress state
+  // 0 : normal
+  // -1: fatigued
+  // 1: stressed
+  const [stressState, setStressState] = useState<number>(0);
 
   /*
    * Callback to trigger whenever a new record is written to the HRV characteristic by the device wearable. 
@@ -268,7 +269,9 @@ const AppRoute: React.FC = () => {
   useEffect(() => {if (loggedIn) dataHook([hrvCallback, errorCallback])}, [loggedIn]); // Start dataHook on login
 
   const handleLogin = () => {
-
+    //@ts-ignore
+    const pass:string = document.getElementById('passcode-input').focusedValue || "";
+    setLoggedIn(pass==passcode);
   }
 
   // TODO:  useEffect to send local notification on userState change
@@ -284,9 +287,11 @@ const AppRoute: React.FC = () => {
           <IonInput 
             placeholder="Enter Your Passcode."
             id='passcode-input'
+            inputMode="numeric"
+            type="password"
           />
           
-          <IonButton onClick={() => {setLoggedIn(true)}}>
+          <IonButton onClick={handleLogin}>
             <IonIcon icon={lockOpenOutline}/>
           </IonButton>
         </div> 

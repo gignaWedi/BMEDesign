@@ -195,12 +195,14 @@ const SettingsTab: React.FC = () => {
             <IonCol size='6' className="ion-text-start">
               {passcode == ""? undefined:<IonInput
                 placeholder="Old Passcode"
-                type="number"
+                inputMode="numeric"
+                type="password"
                 id="old-passcode-input"
               />}
               <IonInput
                 placeholder='New Passcode'
-                type="number"
+                inputMode="numeric"
+                type="password"
                 id="new-passcode-input"
               />
             </IonCol>
