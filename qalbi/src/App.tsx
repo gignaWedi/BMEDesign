@@ -12,6 +12,7 @@ import {
   IonTabs,
   IonText,
   setupIonicReact,
+  useIonRouter,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { analyticsOutline, bookmarksOutline, lockOpenOutline, settingsOutline } from 'ionicons/icons';
@@ -56,14 +57,13 @@ const FIRST_TIME = "first_time";
  */
 
 const App: React.FC = () => {
-
+  
   // userState is the user's current stress state
   // 0 : normal
   // -1: fatigued
   // 1: stressed
   const [stressState, setStressState] = useState<number>(0);
 
-  
   const testHrv = async () => {
     const {files} = await Filesystem.readdir({
       path:"",
