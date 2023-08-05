@@ -137,7 +137,6 @@ const AppRoute: React.FC = () => {
 
     const filename = `HRV-${year}${month}${day}.txt`;
 
-
     // Attempt to read the day data file.
     try {
       const contents = await Filesystem.readFile({
@@ -249,16 +248,19 @@ const AppRoute: React.FC = () => {
     console.error('Error Code', errorCode);
   }
 
-  const [loggedIn, setLoggedIn] = useState<boolean>(false);
-  const [present, dismiss] = useIonLoading();
-  const [passcode, setPasscode] = useState<string>();
+  // Log in page
+  const [loggedIn, setLoggedIn] = useState<boolean>(false); // Is user logged in?
+  const [present, dismiss] = useIonLoading(); // Loading for getting user passcode
+  const [passcode, setPasscode] = useState<string>(); // User passcode
 
+  // Load the passcode
   const loadPasscode = async () => {
     present();
     setPasscode((await Preferences.get({key:PASSCODE})).value || "");
     dismiss();
   }
 
+  // On passcode load, log in if there is no passcode
   useEffect(() => {
     if (passcode == "") {
       setLoggedIn(true); 
@@ -268,13 +270,14 @@ const AppRoute: React.FC = () => {
 
   useEffect(() => {if (loggedIn) dataHook([hrvCallback, errorCallback])}, [loggedIn]); // Start dataHook on login
 
+  // Handle login on password submission
   const handleLogin = () => {
     //@ts-ignore
     const pass:string = document.getElementById('passcode-input').focusedValue || "";
     setLoggedIn(pass==passcode);
   }
 
-  // TODO:  useEffect to send local notification on userState change
+  // TODO:  first time setup
 
   return (
     <IonApp>
