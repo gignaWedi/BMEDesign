@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonIcon, IonButton, IonPopover, IonText } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonIcon, IonButton, IonPopover, IonText, IonCol, IonGrid, IonRow } from '@ionic/react';
 import './AdviceTab.css';
 import { bulbOutline, chatbubblesOutline, flameOutline, pauseCircleOutline, waterOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
@@ -41,7 +41,7 @@ const AdviceTab: React.FC = () => {
           isOpen={text != ""}
           onDidDismiss={() => {setText(""); setType("")}}
         >
-          <div className='popover ion-text-center ion-paddin'>
+          <div className='popover ion-text-center ion-padding'>
             <IonIcon icon={bulbOutline}/>
             <IonText>
               {toTitleCase(type) + ":\n\n" + text}
@@ -49,32 +49,46 @@ const AdviceTab: React.FC = () => {
           </div>
         </IonPopover>
         
-        <div className='homepage'>
+        <IonGrid className="homepage">
           How would you like to relax?
           
-          <IonButton onClick={() => setType("scent")}>
-            <IonIcon icon={flameOutline}/>
-            Scent
-          </IonButton>
+          <IonRow>
+            <IonCol>
+              <IonButton onClick={() => setType("scent")}>
+                <IonIcon icon={flameOutline}/>
+                Scent
+              </IonButton>
+            </IonCol>
+          </IonRow>
 
-          <IonButton onClick={() => setType("water")}>
-          <IonIcon icon={waterOutline}/>
-            Water
-          </IonButton>
+          <IonRow>
+            <IonCol>
+              <IonButton onClick={() => setType("water")}>
+                <IonIcon icon={waterOutline}/>
+                Water
+              </IonButton>
+            </IonCol>
+          </IonRow>
           
-          <IonButton onClick={() => setType("quote")}>
-          <IonIcon icon={chatbubblesOutline}/>
-            Quote
-          </IonButton>
-          
-          <IonButton onClick={() => setType("breath")}>
-          <IonIcon icon={pauseCircleOutline}/>
-            Breath
-          </IonButton>
-        </div>
+          <IonRow>
+            <IonCol>
+              <IonButton onClick={() => setType("quote")}>
+                <IonIcon icon={chatbubblesOutline}/>
+                Quote
+              </IonButton>
+            </IonCol>
+          </IonRow>
+              
+          <IonRow>
+            <IonCol>
+              <IonButton onClick={() => setType("breath")}>
+                <IonIcon icon={pauseCircleOutline}/>
+                Breath
+              </IonButton>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
       </IonContent>
-
-      
 
     </IonPage>
   );
