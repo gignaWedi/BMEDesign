@@ -1,4 +1,4 @@
-import { Route } from 'react-router-dom';
+import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
   IonButton,
@@ -11,6 +11,7 @@ import {
   IonTabButton,
   IonTabs,
   IonText,
+  IonToast,
   setupIonicReact,
   useIonLoading,
   useIonRouter,
@@ -95,9 +96,9 @@ const AppRoute: React.FC = () => {
   useEffect(() => {
     testHrv();  
     loadPasscode();
-    App.addListener("backButton", (event) => {
+    /*App.addListener("backButton", (event) => {
       console.log(router.push("/"));
-    })
+    })*/
   }, []);
 
   // userState is the user's current stress state
@@ -313,6 +314,9 @@ const AppRoute: React.FC = () => {
           <IonReactRouter>
             <IonTabs>
               <IonRouterOutlet>
+                <Route exact path="/">
+                  <Redirect to="/home" />
+                </Route>
                 <Route exact path="/tab1">
                   <GraphTab />
                 </Route>
@@ -322,11 +326,14 @@ const AppRoute: React.FC = () => {
                 <Route exact path="/tab3">
                   <SettingsTab />
                 </Route>
-                <Route exact path="/">
+                <Route exact path="/home">
                   <HomeScreen stressState={stressState}/>
                 </Route>
               </IonRouterOutlet>
               <IonTabBar slot="bottom">
+                <IonTabButton tab="home" href="/home">
+                  <IonIcon aria-hidden="true" icon={homeOutline} />
+                </IonTabButton>
                 <IonTabButton tab="tab1" href="/tab1">
                   <IonIcon aria-hidden="true" icon={analyticsOutline} />
                 </IonTabButton>
