@@ -1,4 +1,4 @@
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route, useHistory } from 'react-router-dom';
 import {
   IonApp,
   IonButton,
@@ -24,6 +24,7 @@ import { useState, useEffect } from 'react';
 import { dataHook, fetchRecords } from './hooks/DataHook';
 import { Filesystem, Encoding, Directory } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
+import { App } from '@capacitor/app';
 //@ts-ignore
 import LockScreen from 'react-lock-screen';
 
@@ -56,8 +57,8 @@ const FIRST_TIME = "first_time";
  * React Functional Component responsible for setting up global states and creating the routing for the device android application.
  */
 
-const App: React.FC = () => {
-  
+const AppRoute: React.FC = () => {
+
   // userState is the user's current stress state
   // 0 : normal
   // -1: fatigued
@@ -98,7 +99,7 @@ const App: React.FC = () => {
     await determineUserState();
   };
 
-  testHrv();
+  useEffect(() => {testHrv()}, []);
 
   /*
    * Callback to trigger whenever a new record is written to the HRV characteristic by the device wearable. 
@@ -321,4 +322,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default AppRoute;

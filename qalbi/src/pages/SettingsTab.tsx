@@ -61,7 +61,14 @@ const SettingsTab: React.FC = () => {
     //@ts-ignore
     setUpperHRV(document.getElementById('upper-input').focusedValue || 107);
     setChanges(false);
-    setMessage("Saved Changes")
+    setMessage("Saved Changes");
+
+    //@ts-ignore
+    document.getElementById('upper-input').focusedValue = "";
+    //@ts-ignore
+    document.getElementById('lower-input').focusedValue = "";
+
+
   }
 
   const changePasscode = () => {

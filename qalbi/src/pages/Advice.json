@@ -1,6 +1,25 @@
 {
-  "scent": ["1"],
-  "water": ["2"],
-  "quote": ["3"],
-  "breath": ["4"]
+  "scent": [
+    "Lavender for tension release and sleep", 
+    "Jasmine for relaxing tension", 
+    "Vanilla for a sweeter relaxation", 
+    "Ylang ylang to release negative moods", 
+    "Peppermint for invigoration and focus",
+    "Lemon for calming down"
+  ],
+  "water": [
+    "Drink a glass of water slowly",
+    "Stay hydrated!"
+  ],
+  "quote": [
+    "Worry empties today of strength",
+    "Give your stress wings and let it fly away",
+    "Recognize that you are doing the best you can",
+    "You will survive whatever is coming, and thrive after"
+  ],
+  "breath": [
+    "4-7-8 technique:\n1. Place tip of tongue against tissue above upper front teth and hold it there\n2.Completely exhale through mouth\n3. Close mouth and inhale through nostrils for a count of 4\n4. Hold breath for count of 7\n5. Exhale through mouth for count of 8",
+    "Diaphragmatic:\n1. Inhale slowly and deeply through nose (abdomen should expand and chest very little rise)\n2. Exhale through mouth, pursing lips and keeping jaw relaxed",
+    "Resonance:\n1. Lie down and close eyes\n2. Mouth closed, gently breath in through nose for 6 seconds (do not fill up lungs all the way)\n3. Exhale for 6 seconds, allowing breath to leave slowly, not forced\n4. Repeat for up to 10 minutes."
+  ]
 }

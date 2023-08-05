@@ -1,10 +1,16 @@
-import { IonButton, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonPage, IonRow, IonText, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonCard, IonCol, IonContent, IonGrid, IonHeader, IonPage, IonRow, IonText, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
 //@ts-ignore
 import LockScreen from 'react-lock-screen';
 import { useState } from "react";
 import './HomeScreen.css';
+import { App } from "@capacitor/app";
 
 const HomeScreen: React.FC<{stressState: number}>  = ({stressState}) => {
+  // Back button goes back home
+  const router = useIonRouter();
+  App.addListener("backButton", (event) => {
+    console.log(router.push("/"));
+  })
   
   return (
     <IonPage>

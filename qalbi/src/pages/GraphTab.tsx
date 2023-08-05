@@ -222,9 +222,7 @@ const GraphTab: React.FC = () => {
                           display: true,
                           text: "HRV"
                         },
-                        //@ts-ignore
                         min: 40, 
-                        //@ts-ignore
                         max: 140
                       }
                     }
