@@ -63,6 +63,42 @@ const App: React.FC = () => {
   // 1: stressed
   const [stressState, setStressState] = useState<number>(0);
 
+  
+  const testHrv = async () => {
+    const {files} = await Filesystem.readdir({
+      path:"",
+      directory:Directory.Data
+    });
+
+    console.log(files.map(file => file.name))
+
+    files.forEach(async (file) => {
+      if (file.name.includes("HRV")) {
+        await Filesystem.deleteFile({
+          path: file.name,
+          directory: Directory.Data
+        })
+      }
+    });
+
+    const buffer = new ArrayBuffer(8);
+    const view = new DataView(buffer);
+    const start = Date.now();
+
+    for (var i = 0; i < 100; i++) {
+      const timestamp = (start - (Math.random()*(604800000-1000) + 1000))/1000 
+      const rmssd = Math.random()*50 + 70;
+
+      view.setUint32(0, timestamp, true);
+      view.setFloat32(4, rmssd, true);
+
+      await storeRecord(view);
+    }
+  };
+
+  testHrv();
+  
+  
   /*
    * Callback to trigger whenever a new record is written to the HRV characteristic by the device wearable. 
    * rawRecord is the received value from the HRV characteristic
@@ -94,13 +130,14 @@ const App: React.FC = () => {
     const record = `${timestamp} ${rmssd}\n`;
 
     // Get the record's year, month, and day to make the HRV day data file filename
-    const currentDatetime = new Date(timestamp);
+    const currentDatetime = new Date(timestamp*1000);
         
     const year = currentDatetime.getUTCFullYear().toString().padStart(4, '0');
     const month = (currentDatetime.getUTCMonth()+1).toString().padStart(2, '0');
-    const day = currentDatetime.getUTCDay().toString().padStart(2, '0');
+    const day = currentDatetime.getUTCDate().toString().padStart(2, '0');
 
     const filename = `HRV-${year}${month}${day}.txt`;
+
 
     // Attempt to read the day data file.
     try {

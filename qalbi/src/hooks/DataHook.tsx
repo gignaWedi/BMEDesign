@@ -140,12 +140,19 @@ export const fetchRecords = async(timePeriod:number): Promise<number[][]> => {
 
     const startTimestamp = endingTimestamp - timePeriod*1000; // Starting timestamp is {timePeriod} seconds ago
 
-    console.log(startTimestamp);
-    console.log(endingTimestamp);
+    console.log(new Date(startTimestamp));
+    console.log(new Date(endingTimestamp));
+
+    const {files} = await Filesystem.readdir({
+        path:"",
+        directory:Directory.Data
+    });
+  
+    console.log("Bruh:", files.map(file => file.name))
 
     var currentTimestamp = startTimestamp; // The current timestamp as the loop control variable.
     
-    while (currentTimestamp < endingTimestamp) {
+    while (currentTimestamp <= endingTimestamp) {
         // Get the currentTimestamp's year, month, and day to make the HRV day data file filename
         const currentDatetime = new Date(currentTimestamp); 
         
@@ -182,7 +189,7 @@ export const fetchRecords = async(timePeriod:number): Promise<number[][]> => {
         const allRecords = rawData.split("\n").map(element => element.split(' ').map(e => Number(e)));
         
         // Remove records with timestamps outside of the range [startTimestamp, endingTimestamp]
-        records = allRecords.filter((row) => row[0] >= startTimestamp && row[0] <= endingTimestamp);
+        records = allRecords.filter((row) => row[0] >= startTimestamp/1000 && row[0] <= endingTimestamp/1000);
 
         // Sort records for convenience.
         records.sort((record1, record2) => record1[0] - record2[1]);

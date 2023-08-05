@@ -3,7 +3,7 @@ import ExploreContainer from '../components/ExploreContainer';
 import './GraphTab.css';
 import { useState, useEffect } from 'react';
 
-import { Line } from 'react-chartjs-2';
+import { Scatter } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -42,9 +42,6 @@ export const options = {
   },
   scales : {
     x : {
-      ticks: {
-        display: false
-      }
     },
     y :{
       title : {
@@ -81,6 +78,7 @@ const GraphTab: React.FC = () => {
   const getChartData = async (): Promise<void> => {
     // TODO: Loading screen while loading data
 
+    var startTime = new Date();
     var timePeriod: number; // Number of seconds to look back for records
 
     // Set timePeriod based on timeframe selection
@@ -102,16 +100,18 @@ const GraphTab: React.FC = () => {
     const records = await fetchRecords(timePeriod); // Fetch the records for the corresponding time period
 
     // If no records exist, end execution to avoid division by zero
-    if (records.length <= 0)
+    if (records.length <= 0) {
+      console.error("No records")
       return;
+    }
 
-    var labels: string[]; // variable to hold the labels for each time point
+    var labels: number[]; // variable to hold the labels for each time point
 
     // If timeframe selection is 1 hr, "floor" each timestamp to a minute that is divisible by 5
     if (timeframe == 0) {
       labels = records.map((record) => {
-            const roundedTimestamp = record[0] - (new Date(record[0]).getMinutes() % 5) * 60; 
-            return new Date(roundedTimestamp).toTimeString();
+            const roundedTimestamp = record[0] - ((new Date(record[0]*1000).getMinutes() - startTime.getMinutes()) % 5) * 60; 
+            return new Date(roundedTimestamp*1000).getMinutes() - startTime.getMinutes();
           }
         )
     }
@@ -119,15 +119,15 @@ const GraphTab: React.FC = () => {
     // If timeframe selection is 1 day, "floor" each timestamp to an even hour.
     else if (timeframe == 1) {
       labels = records.map((record) => {
-            const roundedTimestamp = record[0] - (new Date(record[0]).getHours() % 2) * 60 * 60; 
-            return new Date(roundedTimestamp).toTimeString();
+            const roundedTimestamp = record[0] - ((new Date(record[0]*1000).getHours() - startTime.getHours())  % 2) * 60 * 60; 
+            return new Date(roundedTimestamp*1000).getHours() - startTime.getHours();
           }
         )
     }
 
     // If timeframe selection is 1 week, get the current day.
     else {
-      labels = records.map((record) => new Date(record[0]).toDateString());
+      labels = records.map((record) => new Date(record[0]*1000).getDate() - startTime.getDate());
     }
 
     const unique_labels = [... new Set(labels)]; // Pull unique labels
@@ -141,6 +141,8 @@ const GraphTab: React.FC = () => {
       values[i] = vals.reduce((acc, curr) => acc + curr, 0)/vals.length;
     })
 
+    const aggregatedRecords = unique_labels.map((label, i) => ({x: label, y: values[i]}));
+
     const colors = await colorRecords(values); // Get the colors according to their value.
 
     // Set chartData to a chart.js data object
@@ -148,15 +150,17 @@ const GraphTab: React.FC = () => {
       labels: unique_labels,
       datasets: [{
         label: 'HRV',
-        data: values,
+        data: aggregatedRecords,
         fill: false,
         borderColor: colors,
         backgroundColor: colors,
-        tension: 0.1
+        tension: 0.1,
+        pointRadius: 10,
       }]
     };
 
     setChartData(data);
+    console.log(data);
   }
 
   /*
@@ -168,8 +172,10 @@ const GraphTab: React.FC = () => {
     const baselineRecords = await fetchRecords(3 * 24 * 60 * 60); // Records from 3 days ago to now
 
     // If there are no records, end method to avoid division by zero
-    if (baselineRecords.length <= 0)
+    if (baselineRecords.length <= 0) {
+      console.error("No records")
       return [];
+    }
 
     // Get baselineHRV from the average of the record's HRV values.
     const baselineHRV = baselineRecords.map((record) => record[1]).reduce((acc, curr) => acc + curr, 0) / baselineRecords.length;
@@ -214,7 +220,7 @@ const GraphTab: React.FC = () => {
           <IonRow style={{"flexGrow":1, "width":"100%"}}>
             <IonCol className='full'>
                 <IonCard className='full'>
-                  <Line options={options} data={chartData}/>
+                  <Scatter options={options} data={chartData}/>
                 </IonCard>
             </IonCol>
           </IonRow>
