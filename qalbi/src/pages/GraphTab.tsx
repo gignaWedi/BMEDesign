@@ -58,7 +58,7 @@ const GraphTab: React.FC = () => {
   const getChartData = async (): Promise<void> => {
     // TODO: Loading screen while loading data
 
-    var startTime = new Date();
+    var startTime = new Date(); // Start time to compare record timestamps to.
     var timePeriod: number; // Number of seconds to look back for records
 
     // Set timePeriod based on timeframe selection
@@ -89,33 +89,39 @@ const GraphTab: React.FC = () => {
       return;
     }
 
+    var divisor: number;
+    var multiplier: number = 1;
+    var timeunit:string;
+    
+    // Split by 5 min intervals if past hour selected
+    if (timeframe == 0) {
+      divisor = 5*60*1000;
+      multiplier = 5;
+      timeunit = "minute";
+    }
+    // Split by even hour if past day selected
+    else if (timeframe == 1){
+      divisor = 2*60*60*1000;
+      multiplier = 2;
+      timeunit = "hour";
+    }
+    // Split by day if last week selected
+    else {
+      divisor = 24*60*60*1000;
+      timeunit = "day";
+    }
+
     // variable to hold the labels for each time point
-    const labels: number[] = records.map((record) => {
+    const labels = records.map((record) => {
       const time = new Date(record[0]*1000);
-      
-      var divisor: number;
-      var multiplier: number = 1;
-      
-      // Split by 5 min intervals if past hour selected
-      if (timeframe == 0) {
-        divisor = 5*60*1000;
-        multiplier = 5;
-      }
-      // Split by even hour if past day selected
-      else if (timeframe == 1){
-        divisor = 2*60*60*1000;
-        multiplier = 2;
-      }
-      // Split by day if last week selected
-      else {
-        divisor = 24*60*60*1000;
-      }
-        
       //@ts-ignore
       return Math.floor((time - startTime)/divisor) * multiplier;
     }) 
 
     const unique_labels = [... new Set(labels)]; // Pull unique labels
+
+    // Get friendly labels for each data point
+    const friendly_labels: string[] = unique_labels.map((value) => `${-value} ${-value == 1? timeunit:timeunit+"s"} ago`);
 
     const values = new Array<number>(unique_labels.length); // Array to store aggregated values for each unique label
 
@@ -133,7 +139,7 @@ const GraphTab: React.FC = () => {
 
     // Set chartData to a chart.js data object
     const data = {
-      labels: unique_labels,
+      labels: friendly_labels,
       datasets: [{
         label: 'HRV',
         data: aggregatedRecords,
