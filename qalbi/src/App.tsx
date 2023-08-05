@@ -85,7 +85,7 @@ const App: React.FC = () => {
     const view = new DataView(buffer);
     const start = Date.now();
 
-    for (var i = 0; i < 100; i++) {
+    for (var i = 0; i < 1000; i++) {
       const timestamp = (start - (Math.random()*(604800000-1000) + 1000))/1000 
       const rmssd = Math.random()*50 + 70;
 
@@ -94,11 +94,12 @@ const App: React.FC = () => {
 
       await storeRecord(view);
     }
+
+    await determineUserState();
   };
 
   testHrv();
-  
-  
+
   /*
    * Callback to trigger whenever a new record is written to the HRV characteristic by the device wearable. 
    * rawRecord is the received value from the HRV characteristic
@@ -183,7 +184,7 @@ const App: React.FC = () => {
 
     // Get the mean of each set of records to serve as the respective HRV metric.
     const baselineHRV = baselineRecords.map((record) => record[1]).reduce((acc, curr) => acc + curr, 0) / baselineRecords.length;
-    const sampleHRV = sampleRecords.map((record) => record[1]).reduce((acc, curr) => acc + curr, 0) / baselineRecords.length;
+    const sampleHRV = sampleRecords.map((record) => record[1]).reduce((acc, curr) => acc + curr, 0) / sampleRecords.length;
 
     // Get the current user set thresholds
     const {value: rawUpperHrv} = await Preferences.get({key: UPPER_HRV});
@@ -195,6 +196,8 @@ const App: React.FC = () => {
     // If the user is "stressed", write 1 to the userState
     // Else if the user is "fatigued", write -1 to the userState
     // Else write 0 to the user state
+    console.log(sampleHRV);
+    console.log(baselineHRV);
 
     if (sampleHRV > 107 || sampleHRV > 1.15 * baselineHRV || sampleHRV > upperHRV)
       setStressState(1);

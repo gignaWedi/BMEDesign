@@ -195,5 +195,6 @@ export const fetchRecords = async(timePeriod:number): Promise<number[][]> => {
         records.sort((record1, record2) => record1[0] - record2[1]);
     }
 
+    console.log(records);
     return records;
 }

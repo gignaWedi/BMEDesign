@@ -35,7 +35,8 @@
     "react-chartjs-2": "^5.2.0",
     "react-lock-screen": "^0.1.1",
     "react-router": "^5.3.4",
-    "react-router-dom": "^5.3.4"
+    "react-router-dom": "^5.3.4",
+    "ttest": "^4.0.0"
   },
   "devDependencies": {
     "@capacitor/assets": "^2.0.4",

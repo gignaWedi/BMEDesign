@@ -31,27 +31,6 @@ ChartJS.register(
   Legend
 );
 
-// options for chart.js
-export const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false
-    },
-  },
-  scales : {
-    x : {
-    },
-    y :{
-      title : {
-        display: true,
-        text: "HRV"
-      }
-    }
-  }
-};
-
 /*
  * React Functional Component responsible for creating the front end of the graph tab for the user.
  * Takes in userSettings as a prop to read the HRV thresholds
@@ -102,33 +81,35 @@ const GraphTab: React.FC = () => {
     // If no records exist, end execution to avoid division by zero
     if (records.length <= 0) {
       console.error("No records")
+      setChartData({
+        labels: [],
+        datasets: [{
+        }]
+      });
       return;
     }
 
-    var labels: number[]; // variable to hold the labels for each time point
-
-    // If timeframe selection is 1 hr, "floor" each timestamp to a minute that is divisible by 5
-    if (timeframe == 0) {
-      labels = records.map((record) => {
-            const roundedTimestamp = record[0] - ((new Date(record[0]*1000).getMinutes() - startTime.getMinutes()) % 5) * 60; 
-            return new Date(roundedTimestamp*1000).getMinutes() - startTime.getMinutes();
-          }
-        )
-    }
-
-    // If timeframe selection is 1 day, "floor" each timestamp to an even hour.
-    else if (timeframe == 1) {
-      labels = records.map((record) => {
-            const roundedTimestamp = record[0] - ((new Date(record[0]*1000).getHours() - startTime.getHours())  % 2) * 60 * 60; 
-            return new Date(roundedTimestamp*1000).getHours() - startTime.getHours();
-          }
-        )
-    }
-
-    // If timeframe selection is 1 week, get the current day.
-    else {
-      labels = records.map((record) => new Date(record[0]*1000).getDate() - startTime.getDate());
-    }
+    // variable to hold the labels for each time point
+    const labels: number[] = records.map((record) => {
+      const time = new Date(record[0]*1000);
+      
+      var divisor: number;
+      var multiplier: number = 1;
+      if (timeframe == 0) {
+        divisor = 5*60*1000;
+        multiplier = 5;
+      }
+      else if (timeframe == 1){
+        divisor = 2*60*60*1000;
+        multiplier = 2;
+      }
+      else {
+        divisor = 24*60*60*1000;
+      }
+        
+      //@ts-ignore
+      return Math.floor((time - startTime)/divisor) * multiplier;
+    }) 
 
     const unique_labels = [... new Set(labels)]; // Pull unique labels
 
@@ -156,6 +137,7 @@ const GraphTab: React.FC = () => {
         backgroundColor: colors,
         tension: 0.1,
         pointRadius: 10,
+        showLine: true
       }]
     };
 
@@ -179,6 +161,8 @@ const GraphTab: React.FC = () => {
 
     // Get baselineHRV from the average of the record's HRV values.
     const baselineHRV = baselineRecords.map((record) => record[1]).reduce((acc, curr) => acc + curr, 0) / baselineRecords.length;
+
+    console.log(baselineHRV);
 
     // Get the current user set thresholds
     const {value: rawUpperHrv} = await Preferences.get({key: UPPER_HRV});
@@ -220,7 +204,27 @@ const GraphTab: React.FC = () => {
           <IonRow style={{"flexGrow":1, "width":"100%"}}>
             <IonCol className='full'>
                 <IonCard className='full'>
-                  <Scatter options={options} data={chartData}/>
+                  <Scatter options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: false
+                      },
+                    },
+                    scales : {
+                      x : {
+                      },
+                      y :{
+                        title : {
+                          display: true,
+                          text: "HRV"
+                        },
+                        min: 0,
+                        max: 200 
+                      }
+                    }
+                  }} data={chartData}/>
                 </IonCard>
             </IonCol>
           </IonRow>
