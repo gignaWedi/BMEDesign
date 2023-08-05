@@ -141,11 +141,11 @@ int sendRecords() {
     sscanf(record, "%10d %6.2f\n", unix, transferRmssd);
 
     // Pack record into HRV format and write to hrvChar
-    char hrvValue[8];
+    uint8_t hrvValue[8];
     *((uint32_t*) hrvValue) = unix;
     *((float*) (hrvValue+4)) = transferRmssd;
   
-    hrvChar.writeValue(hrvValue);
+    hrvChar.writeValue(hrvValue, 8);
     lastTransferTime = millis();
 
     // Update transferFilePosition
@@ -186,11 +186,11 @@ void storeRecord() {
   storageFile.close();
   
   // Pack record into HRV format and write to hrvChar
-  char hrvValue[8];
+  uint8_t hrvValue[8];
   *((uint32_t*) hrvValue) = unix;
   *((float*) (hrvValue+4)) = rmssd;
 
-  hrvChar.writeValue(hrvValue);
+  hrvChar.writeValue(hrvValue, 8);
 
   lastTransferTime = millis();
 
