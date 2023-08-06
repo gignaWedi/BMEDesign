@@ -32,6 +32,8 @@ ChartJS.register(
   Legend
 );
 
+ChartJS.defaults.font.size = 32;
+
 /*
  * React Functional Component responsible for creating the front end of the graph tab for the user.
  * Takes in userSettings as a prop to read the HRV thresholds
@@ -220,7 +222,7 @@ const GraphTab: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar className='ion-text-center'>
-          <IonTitle>HRV Readings</IonTitle>
+          <IonTitle><h1>HRV Readings</h1></IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -245,7 +247,8 @@ const GraphTab: React.FC = () => {
                           text: timeframe == 0? "Minutes Ago": timeframe == 1? "Hours Ago" : "Days Ago"
                         },
                         min: timeframe == 0? -70: timeframe == 1? -25: -8,
-                        max: 0
+                        max: 0,
+                        
                       },
                       y :{
                         title : {
@@ -263,17 +266,33 @@ const GraphTab: React.FC = () => {
 
           <IonRow>
             <IonCol>
-              <IonButtons>
-                <IonButton onClick={() => setTimeframe(0)}>
-                  Past Hour
+                <IonButton 
+                  fill={timeframe==0? "solid":"outline"}
+                  onClick={() => setTimeframe(0)}
+                  shape="round"
+                  >
+                  <h2>Past Hour</h2>
                 </IonButton>
-                <IonButton onClick={() => setTimeframe(1)}>
-                  Today
+            </IonCol>
+
+            <IonCol>
+                <IonButton
+                  fill={timeframe==1? "solid":"outline"}
+                  onClick={() => setTimeframe(1)}
+                  shape="round"
+                  >
+                  <h2>Today</h2>
                 </IonButton>
-                <IonButton onClick={() => setTimeframe(2)}>
-                  This Week
-                </IonButton>
-              </IonButtons>
+            </IonCol>
+
+            <IonCol>
+              <IonButton 
+                fill={timeframe==2? "solid":"outline"}
+                onClick={() => setTimeframe(2)}
+                shape="round"
+                >
+                <h2>This Week</h2>
+              </IonButton>
             </IonCol>
           </IonRow>
 

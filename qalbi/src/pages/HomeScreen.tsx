@@ -11,7 +11,7 @@ const HomeScreen: React.FC<{stressState: number}>  = ({stressState}) => {
     <IonPage>
       <IonHeader>
         <IonToolbar className='ion-text-center'>
-          <IonTitle>Traquil+</IonTitle>
+          <IonTitle><h1>Tranquil+</h1></IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -19,14 +19,14 @@ const HomeScreen: React.FC<{stressState: number}>  = ({stressState}) => {
           
           <IonRow style={{"flexGrow":1, "alignItems":"flex-end"}}>
             <IonCol>
-              Your current stress level
+              <h1>Your current stress level</h1>
             </IonCol>
           </IonRow>
 
           <IonRow style={{"flexGrow":2, "alignItems":"flex-start"}}>
             <IonCol>
               <IonCard className="ion-padding">
-                {stressState == 1? "Stressed": stressState  == -1? "Fatigued":"Normal"}
+                <h1>{stressState == 1? "Stressed": stressState  == -1? "Fatigued":"Normal"}</h1>
               </IonCard>
             </IonCol>
           </IonRow>

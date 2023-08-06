@@ -124,7 +124,7 @@ const SettingsTab: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar className='ion-text-center'>
-          <IonTitle>Settings</IonTitle>
+          <IonTitle><h1>Settings</h1></IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -140,7 +140,7 @@ const SettingsTab: React.FC = () => {
         <IonGrid className="homepage">
           <IonRow className='setting'>
             <IonCol size='10' className="ion-text-start">
-              Enable Notifications
+              <h1>Enable Notifications</h1>
             </IonCol>
 
             <IonCol size='2' className="ion-text-end">
@@ -154,7 +154,7 @@ const SettingsTab: React.FC = () => {
 
           <IonRow className='setting'>
             <IonCol size='10' className="ion-text-start">
-              Lower Threshold
+              <h1>Lower Threshold</h1>
             </IonCol>
 
             <IonCol size='2' className="ion-text-end">
@@ -169,7 +169,7 @@ const SettingsTab: React.FC = () => {
 
           <IonRow className='setting'>
             <IonCol size='10' className="ion-text-start">
-              Upper Threshold
+              <h1>Upper Threshold</h1>
             </IonCol>
 
             <IonCol size='2' className="ion-text-end">
@@ -187,7 +187,11 @@ const SettingsTab: React.FC = () => {
                 <IonButton
                   disabled={!changes}
                   onClick={saveChanges}
-                >Save Changes</IonButton>
+                  shape='round'
+                  fill='outline'
+                >
+                  <h2>Save Changes</h2>
+                </IonButton>
               </IonCol>
           </IonRow>
 
@@ -210,8 +214,10 @@ const SettingsTab: React.FC = () => {
             <IonCol size='6' className="ion-text-end">
               <IonButton
                 onClick={changePasscode}
+                shape='round'
+                fill='outline'
               >
-                Change Passcode
+                <h2>Change Passcode</h2>
               </IonButton>
             </IonCol>
           </IonRow>

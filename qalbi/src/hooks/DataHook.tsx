@@ -17,6 +17,13 @@ const REQUEST_CHARACTERISTIC = numberToUUID(0x2A1B); // Bluetooth Low Energy Cha
 export const dataHook = async (callbacks:Array<(value:DataView) => void>) => {
     try {
         await BleClient.initialize(); // Start the BleClient at the beginning of the program
+        
+        // Disconnect from any previous connections
+        const connections = await BleClient.getConnectedDevices([HRV_SERVICE]);
+        connections.forEach(async (connection) => {
+            await BleClient.disconnect(connection.deviceId);
+        })
+
         var connected = false; // Bluetooth connection state
         var id: string; // BLE peripheral device id (the Device Wearable)
 

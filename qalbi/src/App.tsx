@@ -292,8 +292,9 @@ const AppRoute: React.FC = () => {
     <IonApp>
       {!loggedIn? passcode===undefined? undefined: passcode==""? undefined:
         <div className="react-lock-screen__ui">
-          <IonText>
-            Welcome
+          <IonText
+          >
+            <h1>Welcome</h1>
           </IonText>
           
           <IonInput 
@@ -303,8 +304,8 @@ const AppRoute: React.FC = () => {
             type="password"
           />
           
-          <IonButton onClick={handleLogin}>
-            <IonIcon icon={lockOpenOutline}/>
+          <IonButton onClick={handleLogin} shape='round' className='ion-padding'>
+            <IonIcon icon={lockOpenOutline} size="large"/>
           </IonButton>
         </div> 
         

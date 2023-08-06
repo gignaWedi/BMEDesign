@@ -21,3 +21,11 @@
   height: 100vh;
   overflow: hidden;
 }
+
+h1 {
+  font-size: 64pt;
+}
+
+h2 {
+  font-size: 36pt;
+}

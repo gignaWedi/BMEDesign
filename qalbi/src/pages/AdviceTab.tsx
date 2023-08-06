@@ -32,7 +32,7 @@ const AdviceTab: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar className='ion-text-center'>
-          <IonTitle>Advice</IonTitle>
+          <IonTitle><h1>Advice</h1></IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -44,19 +44,19 @@ const AdviceTab: React.FC = () => {
           <div className='popover ion-text-center ion-padding'>
             <IonIcon icon={bulbOutline}/>
             <IonText>
-              {toTitleCase(type) + ":\n\n" + text}
+              <h2>{toTitleCase(type) + ":\n\n" + text}</h2>
             </IonText>
           </div>
         </IonPopover>
         
         <IonGrid className="homepage">
-          How would you like to relax?
+          <h1>How would you like to relax?</h1>
           
           <IonRow>
             <IonCol>
               <IonButton onClick={() => setType("scent")}>
-                <IonIcon icon={flameOutline}/>
-                Scent
+                <IonIcon icon={flameOutline} size='large'/>
+                <h2> Scent</h2>
               </IonButton>
             </IonCol>
           </IonRow>
@@ -64,8 +64,8 @@ const AdviceTab: React.FC = () => {
           <IonRow>
             <IonCol>
               <IonButton onClick={() => setType("water")}>
-                <IonIcon icon={waterOutline}/>
-                Water
+                <IonIcon icon={waterOutline} size='large'/>
+                <h2> Water</h2>
               </IonButton>
             </IonCol>
           </IonRow>
@@ -73,8 +73,8 @@ const AdviceTab: React.FC = () => {
           <IonRow>
             <IonCol>
               <IonButton onClick={() => setType("quote")}>
-                <IonIcon icon={chatbubblesOutline}/>
-                Quote
+                <IonIcon icon={chatbubblesOutline} size='large'/>
+                <h2> Quote</h2>
               </IonButton>
             </IonCol>
           </IonRow>
@@ -82,8 +82,8 @@ const AdviceTab: React.FC = () => {
           <IonRow>
             <IonCol>
               <IonButton onClick={() => setType("breath")}>
-                <IonIcon icon={pauseCircleOutline}/>
-                Breath
+                <IonIcon icon={pauseCircleOutline} size='large'/>
+                <h2> Breath</h2>
               </IonButton>
             </IonCol>
           </IonRow>
