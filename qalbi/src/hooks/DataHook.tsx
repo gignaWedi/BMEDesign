@@ -10,23 +10,21 @@ const HRV_CHARACTERISTIC = numberToUUID(0x2A19); // Bluetooth Low Energy Charact
 const ERROR_CHARACTERISTIC = numberToUUID(0x2A1A); // Bluetooth Low Energy Characteristic UUID (receive error codes from device wearable)
 const REQUEST_CHARACTERISTIC = numberToUUID(0x2A1B); // Bluetooth Low Energy Characteristic UUID (send data requests to device wearable)
 
-
-var attemptReconnect = false;
-/* 
+/*
  * Hook responsible for handling and maintaining connections with the device wearable. 
  * Takes in callbacks array, which assigns these functions to occur when their respective BLE characteristic is written to by the device wearable
  */   
-export const dataHook = async (callbacks:Array<(value:DataView) => void>) => {
+export const dataHook = async (callbacks:Array<(value:DataView) => void>, onConnect:()=>void, onDisconnect:()=>void) => {
     try {
         await BleClient.initialize(); // Start the BleClient at the beginning of the program
         
         // Disconnect from any previous connections
         const connections = await BleClient.getConnectedDevices([HRV_SERVICE]);
-        attemptReconnect = false;
+        
         connections.forEach(async (connection) => {
             await BleClient.disconnect(connection.deviceId);
         })
-        attemptReconnect = true;
+        
 
         var connected = false; // Bluetooth connection state
         var id: string; // BLE peripheral device id (the Device Wearable)
@@ -53,7 +51,7 @@ export const dataHook = async (callbacks:Array<(value:DataView) => void>) => {
             
             // Attempt to connect to the device wearable 5 times.
             var attempts = 0;
-            while (!connected && attempts < 5) {
+            while (!connected && attempts < 2) {
                 try {
                     await BleClient.connect(id, () => onDisconnect());
                     connected = true;
@@ -69,6 +67,8 @@ export const dataHook = async (callbacks:Array<(value:DataView) => void>) => {
             }
 
         } while (!connected);
+
+        onConnect();
 
         // Start Notifications for the HRV and Error Characteristics
         // Updates to the HRV Characteristic should trigger the first callback
@@ -110,16 +110,18 @@ export const dataHook = async (callbacks:Array<(value:DataView) => void>) => {
         
         // Format the request data into the DataView
         view.setUint16(0, lastWeekDate.getUTCFullYear(), true);
-        view.setUint8(2, lastWeekDate.getUTCMonth());
+        view.setUint8(2, lastWeekDate.getUTCMonth()+1);
         view.setUint8(3, lastWeekDate.getUTCDate());
         
         // Write a Records Request to the Request Characteristic
-        await BleClient.write(
+        await BleClient.writeWithoutResponse(
             id,
             HRV_SERVICE,
             REQUEST_CHARACTERISTIC,
             view
         )
+
+        console.log("Done!")
 
 
     } catch (error) {
@@ -130,10 +132,6 @@ export const dataHook = async (callbacks:Array<(value:DataView) => void>) => {
 
         // Reset the dataHook after 30 seconds
         //setTimeout(() => dataHook(callbacks), 30000);
-    }
-
-    // Callback for when the BleClient disconnects. Resets the dataHook.
-    function onDisconnect(): void {
     }
 }
 

@@ -24,7 +24,7 @@ BLEService hrvService("180F"); // BLE HRV service
 
 BLECharacteristic hrvChar("2A19", BLERead | BLENotify, 8); // Bluetooth Low Energy Characteristic to send HRV records
 BLEByteCharacteristic errorChar("2A1A", BLERead | BLENotify); // Bluetooth Low Energy Characteristic to send error codes to device application
-BLECharacteristic requestChar("2A1B", BLERead | BLEWrite, 4); // Bluetooth Low Energy Characteristic to receive data requests from device application
+BLECharacteristic requestChar("2A1B", BLERead | BLEWriteWithoutResponse, 4); // Bluetooth Low Energy Characteristic to receive data requests from device application
 
 bool transferInProgress; // Whether a data transfer is currently in progress
 unsigned long lastTransferTime; // Millisecond of last transfer
@@ -32,8 +32,10 @@ const unsigned long TRANSFER_TIMEOUT = 250; // Number of milliseconds between ea
 
 File transferFile; // Current file used in data transfer
 uint16_t transferDate[3]; // Current transfer date
-char transferFilename[17]; // Current transfer filename
+char transferFilename[13]; // Current transfer filename
 uint32_t transferFilePosition; // Current read position in the current transfer file
+
+uint8_t* last_val = 0;
 
 BLEDevice connectedDevice; // Current connected device central device, which should be the device application
 
@@ -42,7 +44,7 @@ const int CHIP_SELECT = 10; // Digital pin for the SD card's chip select
 
 // RTC
 uRTCLib rtc(0x68); // uRTCLib library object
-UnixTime stamp(0); // Unix timestamp converter 
+UnixTime stamp(0); // Unix timestamp converter
 
 // Pulse Sensor
 const int PULSE_INPUT = A0; // Analog pin for pulse sensor
@@ -96,17 +98,27 @@ void setFilename(char* filename) {
 
 // Sets the filename character array to the selected date's data file.
 void setFilename(char* filename, uint16_t year, uint8_t month, uint8_t day) {
-  snprintf(filename, 17, "HRV-%04d%02d%02d.txt", year, month, day); // Format year, month, and day into the HRV record format (see requirement 3.3.2.2.3)
+  snprintf(filename, 13, "%04d%02d%02d.txt", year, month, day); // Format year, month, and day into the HRV record format (see requirement 3.3.2.2.3)
 }
 
 // Sends HRV records to the device application. Returns 1 on failure to open, and 0 for no errors.
 int sendRecords() {
 
+  if (!connectedDevice.connected()){
+    transferInProgress = false;
+    transferFile.close();
+    Serial.println("Disconnect!");
+    return 1;
+  }
+  
   uint32_t now = getUnixEpochTime();
   
   // If the transferFile is not open, open the next available day
   while (!transferFile){
     // Get the next date time stamp
+
+    setFilename(transferFilename, transferDate[0], transferDate[1], transferDate[2]);
+
     stamp.setDateTime(transferDate[0], transferDate[1], transferDate[2], 0, 0, 0);
     stamp.getDateTime(stamp.getUnix() + 86400);
 
@@ -115,35 +127,33 @@ int sendRecords() {
     transferDate[2] = stamp.day;
     
     uint32_t next_day = stamp.getUnix();
-
-    // If no more days exist, end file transfer and return.
-    if (next_day > now) {
-      transferInProgress = false;
-      Serial.println("Data transfer Done!");
-      return 1;
-    }
-
-    setFilename(transferFilename, transferDate[0], transferDate[1], transferDate[2]);
-
+    
     if (SD.exists(transferFilename)){
       transferFilePosition = 0;
       transferFile = SD.open(transferFilename);
+    }
+
+    else {
+      // If no more days exist, end file transfer and return.
+      if (next_day > now) {
+        transferInProgress = false;
+        Serial.println("Data transfer Done!");
+        return 1;
+      }
     }
   }
 
   // Read the next record from the transferFile 
   transferFile.seek(transferFilePosition);
-
   char record[19];
-  transferFile.read(record, 19);
-
-  Serial.print("Sending: ");
-  Serial.println(record);
-
+  
+  transferFile.read(record, 18);
+  
   // Parse record
   uint32_t unix;
   float transferRmssd;
-  sscanf(record, "%10d %6.2f\n", unix, transferRmssd);
+  sscanf(record, "%d %f", &unix, &transferRmssd);
+  transferRmssd = atof(record+11);
 
   // Pack record into HRV format and write to hrvChar
   uint8_t hrvValue[8];
@@ -154,10 +164,10 @@ int sendRecords() {
   lastTransferTime = millis();
 
   // Update transferFilePosition
-  transferFilePosition = transferFile.position() + 1;
+  transferFilePosition = transferFile.position();
 
   // Check if EOF, close file if so
-  if (transferFilePosition >= transferFile.size()) {
+  if (transferFilePosition+10 >= transferFile.size()) {
     transferFile.close();
   }
     
@@ -174,25 +184,18 @@ void storeRecord() {
   uint32_t unix = getUnixEpochTime();
 
   // Get the current day data filename
-  char storageFilename[17];
+  char storageFilename[13];
   setFilename(storageFilename);
-  Serial.println(storageFilename);
 
-
-  Serial.println(SD.exists(storageFilename));
   // Open current day data file for writing
   File storageFile = SD.open(storageFilename, FILE_WRITE);
-
   
   // Format a record
   char record[19];
   snprintf(record, 19, "%10d %6.2f\n", unix, rmssd);
-  Serial.print(record);
-  Serial.println("?");
 
   // Write record to file and close the file
-  int n = storageFile.write(record, 19);
-  Serial.println(n);
+  storageFile.write(record, 18);
   
   storageFile.close();
   
@@ -223,7 +226,6 @@ void updateHrv() {
 
     // If there was an RR interval before this
     if (lastRRInterval != 0) {
-
       // Get the squared difference of the RR Intervals and add this to rrDiffSquaredTotal
       float rrDiff = currentRRInterval - lastRRInterval;
       rrDiffSquaredTotal += rrDiff * rrDiff;
@@ -244,6 +246,10 @@ void filenameFromRequestChar() {
   uint16_t year = *(uint16_t *) rawRequest;
   uint8_t month = *(uint8_t *) (rawRequest+2);
   uint8_t day = *(uint8_t *) (rawRequest+3);
+
+  transferDate[0] = year;
+  transferDate[1] = month;
+  transferDate[2] = day;
 
   // setFilename to the requested date
   setFilename(transferFilename, year, month, day);
@@ -332,10 +338,10 @@ void setup() {
 
   // Initialize all transferFile variables
   setFilename(transferFilename);
-  Serial.println(transferFilename);
-
+  
   transferFile = SD.open(transferFilename, FILE_WRITE);
   transferFile.close();
+  
   transferFilePosition = 0;
   lastTransferTime = 0;
   transferInProgress = false;
@@ -343,6 +349,7 @@ void setup() {
   transferDate[0] = 2000 + rtc.year();
   transferDate[1] = rtc.month();
   transferDate[2] = rtc.day();
+
 }
 
 // Polls pulse sensor for new beats and handles nonblocking data transfers
@@ -351,15 +358,18 @@ void loop() {
 
   // If a new transfer request comes in
   if (requestChar.written() && !transferInProgress) {    
-    transferInProgress = true; // Set transferInProgress to true
-    
     // Set transferFilename and transferFilePosition according to the requestChar value
-    filenameFromRequestChar();
-    transferFilePosition = 0;
 
-    transferFile = SD.open(transferFilename, FILE_WRITE); // Open the transferFile
+    Serial.println("New request");
     
-    requestChar.writeValue(""); // Clear request
+    filenameFromRequestChar();
+
+    Serial.println(transferDate[0]);
+    Serial.println(transferDate[1]);
+    Serial.println(transferDate[2]);
+    
+    transferInProgress = true; // Set transferInProgress to true
+  
   }
 
   // If there is a current transfer in progress, send records.

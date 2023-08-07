@@ -58,7 +58,7 @@ const FIRST_TIME = "first_time";
  */
 const AppRoute: React.FC = () => {
   // Test Code!
-  const testHrv = async () => {
+  const dumpHrv = async () => {
     const {files} = await Filesystem.readdir({
       path:"",
       directory:Directory.Data
@@ -74,6 +74,9 @@ const AppRoute: React.FC = () => {
         })
       }
     });
+  }
+
+  const testHrv = async () => {
 
     const buffer = new ArrayBuffer(8);
     const view = new DataView(buffer);
@@ -94,7 +97,8 @@ const AppRoute: React.FC = () => {
 
   const router = useIonRouter();
   useEffect(() => {
-    testHrv();  
+    dumpHrv();
+    //testHrv();  
     loadPasscode();
     /*App.addListener("backButton", (event) => {
       console.log(router.push("/"));
@@ -106,6 +110,7 @@ const AppRoute: React.FC = () => {
   // -1: fatigued
   // 1: stressed
   const [stressState, setStressState] = useState<number>(0);
+  const [connected, setConnected] = useState(false);
 
   /*
    * Callback to trigger whenever a new record is written to the HRV characteristic by the device wearable. 
@@ -133,6 +138,9 @@ const AppRoute: React.FC = () => {
 
     const timestamp = rawRecord.getUint32(0, true);
     const rmssd = rawRecord.getFloat32(4, true).toFixed(2).padStart(6, '0');
+
+    console.log(timestamp);
+    console.log(rmssd);
 
     // Format the record
     const record = `${timestamp} ${rmssd}\n`;
@@ -277,7 +285,7 @@ const AppRoute: React.FC = () => {
     }
   }, [passcode])
 
-  useEffect(() => {if (loggedIn) dataHook([hrvCallback, errorCallback])}, [loggedIn]); // Start dataHook on login
+  useEffect(() => {if (loggedIn) dataHook([hrvCallback, errorCallback], () => setConnected(true), () => setConnected(false))}, [loggedIn]); // Start dataHook on login
   
   const [failLogin, setFailLogin] = useState(false);
 
@@ -362,7 +370,8 @@ const AppRoute: React.FC = () => {
 
           <IonFab vertical="top" horizontal="end" slot="fixed">
             <IonFabButton
-              onClick={() => {console.log("hi!"); dataHook([hrvCallback, errorCallback])}}
+              color={connected? "primary":"danger"}
+              onClick={() => {console.log("hi!"); dataHook([hrvCallback, errorCallback], () => setConnected(true), () => setConnected(false))}}
             >
               <IonIcon aria-hidden="true" icon={bluetoothOutline} />
             </IonFabButton>
