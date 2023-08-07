@@ -283,7 +283,7 @@ const AppRoute: React.FC = () => {
 
       // If 5 readjustErrors have occurred in the last hour, set a local notification and reset the timeout
       if (readjustError >= 5) {
-        // TODO: local notif if 5 readjust error
+        handleErrorMessage();
         clearTimeout(timeoutID);
       }
 
@@ -301,6 +301,23 @@ const AppRoute: React.FC = () => {
 
     // Log the error code
     console.error('Error Code', errorCode);
+  }
+
+  const handleErrorMessage = async () => {
+    const notificationsOn = Boolean((await Preferences.get({key:NOTIFICATIONS})).value);
+    
+    if ((await LocalNotifications.checkPermissions()).display != 'granted'){
+      await LocalNotifications.requestPermissions();
+    } 
+
+    if (notificationsOn) {
+      const notification:LocalNotificationSchema = {
+        title: "Device Misread", 
+        body:"Your Tranquil+ device is not properly reading your heart rate! Try readjusting the glove fit so that the sensor rests on the fingertip.", 
+        id:0,
+      };
+      LocalNotifications.schedule({notifications:[notification]});
+    }
   }
 
   // Log in page
@@ -432,7 +449,7 @@ const AppRoute: React.FC = () => {
           <IonFab vertical="top" horizontal="end" slot="fixed">
             <IonFabButton
               color={connected? "primary":"danger"}
-              onClick={() => {console.log("hi!"); dataHook([hrvCallback, errorCallback], () => setConnected(true), () => setConnected(false))}}
+              onClick={() => {console.log("Bluetooth Reconnect."); dataHook([hrvCallback, errorCallback], () => setConnected(true), () => setConnected(false))}}
             >
               <IonIcon aria-hidden="true" icon={bluetoothOutline} />
             </IonFabButton>
