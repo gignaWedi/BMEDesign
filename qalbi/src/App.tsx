@@ -336,26 +336,29 @@ const AppRoute: React.FC = () => {
   }
 
   const handleDisconnect = async () => {
-    const notificationsOn = Boolean((await Preferences.get({key:NOTIFICATIONS})).value);
-    
-    if ((await LocalNotifications.checkPermissions()).display != 'granted'){
-      await LocalNotifications.requestPermissions();
-    } 
+    const notification:LocalNotificationSchema = {
+      title: "Device Disconnect", 
+      body:"Your Tranquil+ device disconnected! Start the Tranquil+ App to reconnect.", 
+      id:0,
+    };
 
-    if (notificationsOn) {
-      const notification:LocalNotificationSchema = {
-        title: "Device Disconnect", 
-        body:"Your Tranquil+ device disconnected! Start the Tranquil+ App to reconnect.", 
-        id:0,
-      };
-      LocalNotifications.schedule({notifications: [notification]});
+    if (!connected) {
+      const notificationsOn = Boolean((await Preferences.get({key:NOTIFICATIONS})).value);
+      
+      if ((await LocalNotifications.checkPermissions()).display != 'granted'){
+        await LocalNotifications.requestPermissions();
+      } 
+
+      if (notificationsOn) {
+        LocalNotifications.schedule({notifications: [notification]});
+      }
+    }
+    else {
+      LocalNotifications.removeDeliveredNotifications({notifications:[notification]})
     }
   }
 
   useEffect(() => {handleDisconnect()}, [connected])
-
-
-  // TODO:  first time setup
 
   return (
     <IonApp>
