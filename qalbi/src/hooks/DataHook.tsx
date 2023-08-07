@@ -10,6 +10,8 @@ const HRV_CHARACTERISTIC = numberToUUID(0x2A19); // Bluetooth Low Energy Charact
 const ERROR_CHARACTERISTIC = numberToUUID(0x2A1A); // Bluetooth Low Energy Characteristic UUID (receive error codes from device wearable)
 const REQUEST_CHARACTERISTIC = numberToUUID(0x2A1B); // Bluetooth Low Energy Characteristic UUID (send data requests to device wearable)
 
+
+var attemptReconnect = false;
 /* 
  * Hook responsible for handling and maintaining connections with the device wearable. 
  * Takes in callbacks array, which assigns these functions to occur when their respective BLE characteristic is written to by the device wearable
@@ -20,9 +22,11 @@ export const dataHook = async (callbacks:Array<(value:DataView) => void>) => {
         
         // Disconnect from any previous connections
         const connections = await BleClient.getConnectedDevices([HRV_SERVICE]);
+        attemptReconnect = false;
         connections.forEach(async (connection) => {
             await BleClient.disconnect(connection.deviceId);
         })
+        attemptReconnect = true;
 
         var connected = false; // Bluetooth connection state
         var id: string; // BLE peripheral device id (the Device Wearable)
@@ -130,7 +134,6 @@ export const dataHook = async (callbacks:Array<(value:DataView) => void>) => {
 
     // Callback for when the BleClient disconnects. Resets the dataHook.
     function onDisconnect(): void {
-        dataHook(callbacks);
     }
 }
 

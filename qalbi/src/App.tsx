@@ -278,12 +278,15 @@ const AppRoute: React.FC = () => {
   }, [passcode])
 
   useEffect(() => {if (loggedIn) dataHook([hrvCallback, errorCallback])}, [loggedIn]); // Start dataHook on login
+  
+  const [failLogin, setFailLogin] = useState(false);
 
   // Handle login on password submission
   const handleLogin = () => {
     //@ts-ignore
     const pass:string = document.getElementById('passcode-input').focusedValue || "";
     setLoggedIn(pass==passcode);
+    setFailLogin(pass!=passcode);
   }
 
   // TODO:  first time setup
@@ -296,6 +299,15 @@ const AppRoute: React.FC = () => {
           >
             <h1>Welcome</h1>
           </IonText>
+
+          <IonToast
+            isOpen={failLogin}
+            duration={3000}
+            message="Incorrect Password"
+            onDidDismiss={() => setFailLogin(false)}
+          >
+
+          </IonToast>
           
           <IonInput 
             placeholder="Enter Your Passcode."
