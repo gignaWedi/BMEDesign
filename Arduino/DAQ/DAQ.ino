@@ -260,7 +260,7 @@ void setup() {
 
   // For Debugging, use the Serial
   Serial.begin(115200);
-  while (!Serial);
+  //while (!Serial);
 
   // BLE
   

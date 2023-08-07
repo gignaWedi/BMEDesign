@@ -26,6 +26,7 @@ import { useState, useEffect } from 'react';
 import { dataHook, fetchRecords } from './hooks/DataHook';
 import { Filesystem, Encoding, Directory } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
+import { LocalNotifications, LocalNotificationSchema } from '@capacitor/local-notifications';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -51,13 +52,14 @@ setupIonicReact();
 const LOWER_HRV = "lower_hrv";
 const UPPER_HRV = "upper_hrv";
 const PASSCODE = "passcode";
-const FIRST_TIME = "first_time";
+const NOTIFICATIONS = "notifications";
 
 /*
  * React Functional Component responsible for setting up global states and creating the routing for the device android application.
  */
 const AppRoute: React.FC = () => {
   // Test Code!
+  
   const dumpHrv = async () => {
     const {files} = await Filesystem.readdir({
       path:"",
@@ -221,6 +223,42 @@ const AppRoute: React.FC = () => {
       setStressState(0);
   }
 
+
+  useEffect(()=> {handleStressChange()}, [stressState]);
+  const handleStressChange = async () => {
+    const notificationsOn = Boolean((await Preferences.get({key:NOTIFICATIONS})).value);
+    
+    if ((await LocalNotifications.checkPermissions()).display != 'granted'){
+      await LocalNotifications.requestPermissions();
+    } 
+
+    if (notificationsOn) {
+      
+      var header:string = "";
+      var message:string = "";
+      
+      if (stressState == 0) {
+        header = "Great job with your stress management!"
+        message = "Tranquil+ detected that your stress levels are good! Keep it up!"
+      }
+      else if (stressState == -1) {
+        header = "You might be a bit fatigued."
+        message = "Try taking a break for a bit to catch some rest!"
+      }
+      else {
+        header = "You might be a bit stress."
+        message = "Try checking out the advice section in the Tranquil+ app to get some activities to destress!"
+      }
+      
+      const notification:LocalNotificationSchema = {
+        title: header, 
+        body: message, 
+        id:1,
+      };
+      LocalNotifications.schedule({notifications: [notification]});
+    }
+  }
+
   var readjustError = 0; // number of readjust Errors in the last hour
   var timeoutID: NodeJS.Timeout|undefined = undefined; // timeout to handle clearing readjustError
   
@@ -296,6 +334,26 @@ const AppRoute: React.FC = () => {
     setLoggedIn(pass==passcode);
     setFailLogin(pass!=passcode);
   }
+
+  const handleDisconnect = async () => {
+    const notificationsOn = Boolean((await Preferences.get({key:NOTIFICATIONS})).value);
+    
+    if ((await LocalNotifications.checkPermissions()).display != 'granted'){
+      await LocalNotifications.requestPermissions();
+    } 
+
+    if (notificationsOn) {
+      const notification:LocalNotificationSchema = {
+        title: "Device Disconnect", 
+        body:"Your Tranquil+ device disconnected! Start the Tranquil+ App to reconnect.", 
+        id:0,
+      };
+      LocalNotifications.schedule({notifications: [notification]});
+    }
+  }
+
+  useEffect(() => {handleDisconnect()}, [connected])
+
 
   // TODO:  first time setup
 

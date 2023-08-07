@@ -2,6 +2,7 @@ import { IonButton, IonCol, IonContent, IonGrid, IonHeader, IonInput, IonPage, I
 import './SettingsTab.css';
 import { Preferences } from '@capacitor/preferences';
 import { useEffect, useState } from 'react';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 // Preference IDs for each setting
 const LOWER_HRV = "lower_hrv";
@@ -60,7 +61,17 @@ const SettingsTab: React.FC = () => {
   }, [lowerHRV]);
 
   useEffect( () => {
-    if (ready) Preferences.set({key:NOTIFICATIONS, value:(notifications).toString()}); 
+    if (ready){ 
+      Preferences.set({key:NOTIFICATIONS, value:(notifications).toString()});
+
+      if (notifications) {
+        LocalNotifications.requestPermissions();
+      }
+
+    }
+    
+    
+
   }, [notifications]);
   
   useEffect(
