@@ -390,7 +390,4 @@ void loop() {
       updateHrv();
     }
   }
- 
-
-  
 }
