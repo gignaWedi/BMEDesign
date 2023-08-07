@@ -119,6 +119,7 @@ int sendRecords() {
     // If no more days exist, end file transfer and return.
     if (next_day > now) {
       transferInProgress = false;
+      Serial.println("Data transfer Done!");
       return 1;
     }
 
@@ -128,36 +129,38 @@ int sendRecords() {
       transferFilePosition = 0;
       transferFile = SD.open(transferFilename);
     }
-
-    // Read the next record from the transferFile 
-    transferFile.seek(transferFilePosition);
-
-    char record[19];
-    transferFile.read(record, 19);
-
-    // Parse record
-    uint32_t unix;
-    float transferRmssd;
-    sscanf(record, "%10d %6.2f\n", unix, transferRmssd);
-
-    // Pack record into HRV format and write to hrvChar
-    uint8_t hrvValue[8];
-    *((uint32_t*) hrvValue) = unix;
-    *((float*) (hrvValue+4)) = transferRmssd;
-  
-    hrvChar.writeValue(hrvValue, 8);
-    lastTransferTime = millis();
-
-    // Update transferFilePosition
-    transferFilePosition = transferFile.position() + 1;
-
-    // Check if EOF, close file if so
-    if (transferFilePosition >= transferFile.size()) {
-      transferFile.close();
-    }
-    
   }
 
+  // Read the next record from the transferFile 
+  transferFile.seek(transferFilePosition);
+
+  char record[19];
+  transferFile.read(record, 19);
+
+  Serial.print("Sending: ");
+  Serial.println(record);
+
+  // Parse record
+  uint32_t unix;
+  float transferRmssd;
+  sscanf(record, "%10d %6.2f\n", unix, transferRmssd);
+
+  // Pack record into HRV format and write to hrvChar
+  uint8_t hrvValue[8];
+  *((uint32_t*) hrvValue) = unix;
+  *((float*) (hrvValue+4)) = transferRmssd;
+
+  hrvChar.writeValue(hrvValue, 8);
+  lastTransferTime = millis();
+
+  // Update transferFilePosition
+  transferFilePosition = transferFile.position() + 1;
+
+  // Check if EOF, close file if so
+  if (transferFilePosition >= transferFile.size()) {
+    transferFile.close();
+  }
+    
   return 0;
 }
 
@@ -173,16 +176,24 @@ void storeRecord() {
   // Get the current day data filename
   char storageFilename[17];
   setFilename(storageFilename);
+  Serial.println(storageFilename);
 
+
+  Serial.println(SD.exists(storageFilename));
   // Open current day data file for writing
   File storageFile = SD.open(storageFilename, FILE_WRITE);
 
+  
   // Format a record
   char record[19];
   snprintf(record, 19, "%10d %6.2f\n", unix, rmssd);
+  Serial.print(record);
+  Serial.println("?");
 
   // Write record to file and close the file
-  storageFile.write(record, 19);
+  int n = storageFile.write(record, 19);
+  Serial.println(n);
+  
   storageFile.close();
   
   // Pack record into HRV format and write to hrvChar
@@ -216,8 +227,6 @@ void updateHrv() {
       // Get the squared difference of the RR Intervals and add this to rrDiffSquaredTotal
       float rrDiff = currentRRInterval - lastRRInterval;
       rrDiffSquaredTotal += rrDiff * rrDiff;
-      
-      Serial.println(rrDiff);
     }
     lastRRInterval = currentRRInterval; // Update last RR Interval.
   }
@@ -325,7 +334,8 @@ void setup() {
   setFilename(transferFilename);
   Serial.println(transferFilename);
 
-  transferFile = SD.open(transferFilename);
+  transferFile = SD.open(transferFilename, FILE_WRITE);
+  transferFile.close();
   transferFilePosition = 0;
   lastTransferTime = 0;
   transferInProgress = false;
@@ -354,6 +364,7 @@ void loop() {
 
   // If there is a current transfer in progress, send records.
   if (transferInProgress && millis() - lastTransferTime > TRANSFER_TIMEOUT) {
+    Serial.println("Sending records");
     sendRecords();
   }
 
@@ -364,6 +375,8 @@ void loop() {
     // If bpm is in range, store and send the rmssd measurement, else, send an error code.
     if (bpm > 40 && bpm < 240) {
       rmssd = sqrt(rrDiffSquaredTotal/(numRRDetected-1));
+      Serial.print("RMSSD: ");
+      Serial.println(rmssd);
       storeRecord();
     } 
     else {
