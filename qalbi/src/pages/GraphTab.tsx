@@ -32,7 +32,7 @@ ChartJS.register(
   Legend
 );
 
-ChartJS.defaults.font.size = 32;
+ChartJS.defaults.font.size = 16;
 
 /*
  * React Functional Component responsible for creating the front end of the graph tab for the user.
@@ -264,36 +264,35 @@ const GraphTab: React.FC = () => {
             </IonCol>
           </IonRow>
 
-          <IonRow>
-            <IonCol>
-                <IonButton 
-                  fill={timeframe==0? "solid":"outline"}
-                  onClick={() => setTimeframe(0)}
-                  shape="round"
-                  >
-                  <h2>Past Hour</h2>
-                </IonButton>
-            </IonCol>
-
-            <IonCol>
-                <IonButton
-                  fill={timeframe==1? "solid":"outline"}
-                  onClick={() => setTimeframe(1)}
-                  shape="round"
-                  >
-                  <h2>Today</h2>
-                </IonButton>
-            </IonCol>
-
-            <IonCol>
+          <IonRow className='ion-text-center'>
+            <IonButtons>
+              <IonButton 
+                fill={timeframe==0? "solid":"outline"}
+                onClick={() => setTimeframe(0)}
+                shape="round"
+                color="primary"
+                >
+                <h2>Past Hour</h2>
+              </IonButton>
+          
+              <IonButton
+                fill={timeframe==1? "solid":"outline"}
+                onClick={() => setTimeframe(1)}
+                shape="round"
+                color="primary"
+                >
+                <h2>Today</h2>
+              </IonButton>
+           
               <IonButton 
                 fill={timeframe==2? "solid":"outline"}
                 onClick={() => setTimeframe(2)}
                 shape="round"
+                color="primary"
                 >
                 <h2>This Week</h2>
               </IonButton>
-            </IonCol>
+            </IonButtons>
           </IonRow>
 
         </IonGrid>

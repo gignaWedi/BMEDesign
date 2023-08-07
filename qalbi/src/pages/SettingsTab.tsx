@@ -196,7 +196,7 @@ const SettingsTab: React.FC = () => {
           </IonRow>
 
           <IonRow className='setting'>
-            <IonCol size='6' className="ion-text-start">
+            <IonCol size='5' className="ion-text-start">
               {passcode == ""? undefined:<IonInput
                 placeholder="Old Passcode"
                 inputMode="numeric"
@@ -211,13 +211,13 @@ const SettingsTab: React.FC = () => {
               />
             </IonCol>
 
-            <IonCol size='6' className="ion-text-end">
+            <IonCol size='7' className="ion-text-end">
               <IonButton
                 onClick={changePasscode}
                 shape='round'
                 fill='outline'
               >
-                <h2>Change Passcode</h2>
+                <h2>Change Code</h2>
               </IonButton>
             </IonCol>
           </IonRow>

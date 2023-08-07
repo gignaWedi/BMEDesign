@@ -49,12 +49,12 @@ const AdviceTab: React.FC = () => {
           </div>
         </IonPopover>
         
-        <IonGrid className="homepage">
+        <IonGrid className="homepage ion-text-center">
           <h1>How would you like to relax?</h1>
           
           <IonRow>
             <IonCol>
-              <IonButton onClick={() => setType("scent")}>
+              <IonButton onClick={() => setType("scent")} shape="round">
                 <IonIcon icon={flameOutline} size='large'/>
                 <h2> Scent</h2>
               </IonButton>
@@ -63,7 +63,7 @@ const AdviceTab: React.FC = () => {
 
           <IonRow>
             <IonCol>
-              <IonButton onClick={() => setType("water")}>
+              <IonButton onClick={() => setType("water")} shape="round">
                 <IonIcon icon={waterOutline} size='large'/>
                 <h2> Water</h2>
               </IonButton>
@@ -72,7 +72,7 @@ const AdviceTab: React.FC = () => {
           
           <IonRow>
             <IonCol>
-              <IonButton onClick={() => setType("quote")}>
+              <IonButton onClick={() => setType("quote")} shape="round">
                 <IonIcon icon={chatbubblesOutline} size='large'/>
                 <h2> Quote</h2>
               </IonButton>
@@ -81,7 +81,7 @@ const AdviceTab: React.FC = () => {
               
           <IonRow>
             <IonCol>
-              <IonButton onClick={() => setType("breath")}>
+              <IonButton onClick={() => setType("breath")} shape="round">
                 <IonIcon icon={pauseCircleOutline} size='large'/>
                 <h2> Breath</h2>
               </IonButton>
