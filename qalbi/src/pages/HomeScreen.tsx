@@ -1,6 +1,5 @@
 import { IonCard, IonCol, IonContent, IonGrid, IonHeader, IonPage, IonRow, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
 import './HomeScreen.css';
-import { App } from "@capacitor/app";
 
 /*
  * React Functional Component responsible for creating the front end of the home screen for the user. 

@@ -46,7 +46,6 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import { App } from '@capacitor/app';
 setupIonicReact();
 
 const LOWER_HRV = "lower_hrv";
@@ -58,8 +57,8 @@ const NOTIFICATIONS = "notifications";
  * React Functional Component responsible for setting up global states and creating the routing for the device android application.
  */
 const AppRoute: React.FC = () => {
-  // Test Code!
   
+  // Test Code!
   const dumpHrv = async () => {
     const {files} = await Filesystem.readdir({
       path:"",
@@ -102,9 +101,6 @@ const AppRoute: React.FC = () => {
     dumpHrv();
     testHrv();  
     loadPasscode();
-    /*App.addListener("backButton", (event) => {
-      console.log(router.push("/"));
-    })*/
   }, []);
 
   // userState is the user's current stress state
@@ -354,7 +350,7 @@ const AppRoute: React.FC = () => {
 
   const handleDisconnect = async () => {
     const notification:LocalNotificationSchema = {
-      title: "Device Disconnect", 
+      title: "Device Disconnected", 
       body:"Your Tranquil+ device disconnected! Start the Tranquil+ App to reconnect.", 
       id:0,
     };

@@ -13,7 +13,6 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { refreshOutline } from 'ionicons/icons';
 import { fetchRecords } from '../hooks/DataHook';
 
 import { Preferences } from '@capacitor/preferences';
