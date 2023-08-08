@@ -427,16 +427,16 @@ const AppRoute: React.FC = () => {
               </IonRouterOutlet>
               <IonTabBar slot="bottom">
                 <IonTabButton tab="home" href="/home">
-                  <IonIcon aria-hidden="true" icon={homeOutline} />
+                  <IonIcon aria-hidden="true" icon={homeOutline}  size='large'/>
                 </IonTabButton>
                 <IonTabButton tab="tab1" href="/tab1">
-                  <IonIcon aria-hidden="true" icon={analyticsOutline} />
+                  <IonIcon aria-hidden="true" icon={analyticsOutline}  size='large'/>
                 </IonTabButton>
                 <IonTabButton tab="tab2" href="/tab2">
-                  <IonIcon aria-hidden="true" icon={bookmarksOutline} />
+                  <IonIcon aria-hidden="true" icon={bookmarksOutline}  size='large'/>
                 </IonTabButton>
                 <IonTabButton tab="tab3" href="/tab3">
-                  <IonIcon aria-hidden="true" icon={settingsOutline} />
+                  <IonIcon aria-hidden="true" icon={settingsOutline}  size='large'/>
                 </IonTabButton>
               </IonTabBar>
             </IonTabs>
