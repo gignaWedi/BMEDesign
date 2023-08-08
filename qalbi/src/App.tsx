@@ -14,7 +14,6 @@ import {
   IonToast,
   setupIonicReact,
   useIonLoading,
-  useIonRouter,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { analyticsOutline, bluetoothOutline, bookmarksOutline, homeOutline, lockOpenOutline, settingsOutline } from 'ionicons/icons';
@@ -57,7 +56,7 @@ const NOTIFICATIONS = "notifications";
  * React Functional Component responsible for setting up global states and creating the routing for the device android application.
  */
 const AppRoute: React.FC = () => {
-  
+  /*
   // Test Code!
   const dumpHrv = async () => {
     const {files} = await Filesystem.readdir({
@@ -96,10 +95,10 @@ const AppRoute: React.FC = () => {
     await determineUserState();
   };
 
-  const router = useIonRouter();
+  */
+
+  // On startup, load the passcode
   useEffect(() => {
-    dumpHrv();
-    testHrv();  
     loadPasscode();
   }, []);
 
@@ -219,7 +218,7 @@ const AppRoute: React.FC = () => {
       setStressState(0);
   }
 
-
+  // Send notification on stress state change
   useEffect(()=> {handleStressChange()}, [stressState]);
   const handleStressChange = async () => {
     const notificationsOn = Boolean((await Preferences.get({key:NOTIFICATIONS})).value);
@@ -299,13 +298,14 @@ const AppRoute: React.FC = () => {
     console.error('Error Code', errorCode);
   }
 
+  // Send error message on fail to read
   const handleErrorMessage = async () => {
     const notificationsOn = Boolean((await Preferences.get({key:NOTIFICATIONS})).value);
     
     if ((await LocalNotifications.checkPermissions()).display != 'granted'){
       await LocalNotifications.requestPermissions();
     } 
-
+  
     if (notificationsOn) {
       const notification:LocalNotificationSchema = {
         title: "Device Misread", 
@@ -332,8 +332,10 @@ const AppRoute: React.FC = () => {
   useEffect(() => {
     if (passcode == "") {
       setLoggedIn(true); 
-      dismiss();
     }
+
+    if (passcode != undefined)
+      dismiss();
   }, [passcode])
 
   useEffect(() => {if (loggedIn) dataHook([hrvCallback, errorCallback], () => setConnected(true), () => setConnected(false))}, [loggedIn]); // Start dataHook on login
@@ -348,6 +350,7 @@ const AppRoute: React.FC = () => {
     setFailLogin(pass!=passcode);
   }
 
+  // Notifications on disconnect
   const handleDisconnect = async () => {
     const notification:LocalNotificationSchema = {
       title: "Device Disconnected", 
@@ -355,6 +358,7 @@ const AppRoute: React.FC = () => {
       id:0,
     };
 
+    // if the device disconnects, send a notification
     if (!connected) {
       const notificationsOn = Boolean((await Preferences.get({key:NOTIFICATIONS})).value);
       
@@ -367,11 +371,12 @@ const AppRoute: React.FC = () => {
       }
     }
     else {
+      // Remove notification on reconnect
       LocalNotifications.removeDeliveredNotifications({notifications:[notification]})
     }
   }
 
-  useEffect(() => {handleDisconnect()}, [connected])
+  useEffect(() => {handleDisconnect()}, [connected]) // On connection status change, handle notifications
 
   return (
     <IonApp>
