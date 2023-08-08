@@ -120,13 +120,13 @@ const GraphTab: React.FC = () => {
     const labels = records.map((record) => {
       const time = new Date(record[0]*1000);
       //@ts-ignore
-      return Math.ceil((time - startTime)/divisor) * multiplier;
+      return Math.floor((startTime - time)/divisor) * multiplier;
     }) 
 
     const unique_labels = [... new Set(labels)]; // Pull unique labels
 
     // Get friendly labels for each data point
-    const friendly_labels: string[] = unique_labels.map((value) => `${-value} ${-value == 1? timeunit:timeunit+"s"} ago`);
+    const friendly_labels: string[] = unique_labels.map((value) => `${value} ${value == 1? timeunit:timeunit+"s"} ago`);
 
     const values = new Array<number>(unique_labels.length); // Array to store aggregated values for each unique label
 
@@ -246,9 +246,9 @@ const GraphTab: React.FC = () => {
                           display: true,
                           text: timeframe == 0? "Minutes Ago": timeframe == 1? "Hours Ago" : "Days Ago"
                         },
-                        min: timeframe == 0? -70: timeframe == 1? -25: -8,
-                        max: 1,
-                        
+                        max: timeframe == 0? 70: timeframe == 1? 25: 8,
+                        min: -1,
+                        reverse: true
                       },
                       y :{
                         title : {

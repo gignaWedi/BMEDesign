@@ -151,7 +151,7 @@ const SettingsTab: React.FC = () => {
         <IonGrid className="homepage">
           <IonRow className='setting'>
             <IonCol size='10' className="ion-text-start">
-              <h1>Enable Notifications</h1>
+              <h2>Enable Notifications</h2>
             </IonCol>
 
             <IonCol size='2' className="ion-text-end">
@@ -165,7 +165,7 @@ const SettingsTab: React.FC = () => {
 
           <IonRow className='setting'>
             <IonCol size='10' className="ion-text-start">
-              <h1>Lower Threshold</h1>
+              <h2>Lower Threshold</h2>
             </IonCol>
 
             <IonCol size='2' className="ion-text-end">
@@ -180,7 +180,7 @@ const SettingsTab: React.FC = () => {
 
           <IonRow className='setting'>
             <IonCol size='10' className="ion-text-start">
-              <h1>Upper Threshold</h1>
+              <h2>Upper Threshold</h2>
             </IonCol>
 
             <IonCol size='2' className="ion-text-end">

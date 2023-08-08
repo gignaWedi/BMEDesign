@@ -100,7 +100,7 @@ const AppRoute: React.FC = () => {
   const router = useIonRouter();
   useEffect(() => {
     dumpHrv();
-    //testHrv();  
+    testHrv();  
     loadPasscode();
     /*App.addListener("backButton", (event) => {
       console.log(router.push("/"));
