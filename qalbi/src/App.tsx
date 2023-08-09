@@ -76,6 +76,7 @@ const AppRoute: React.FC = () => {
     });
   }
 
+  
   const testHrv = async () => {
 
     const buffer = new ArrayBuffer(8);
@@ -95,10 +96,13 @@ const AppRoute: React.FC = () => {
     await determineUserState();
   };
 
-  */
+    */
+  
 
   // On startup, load the passcode
   useEffect(() => {
+    //dumpHrv();
+    //testHrv()
     loadPasscode();
   }, []);
 
@@ -150,6 +154,8 @@ const AppRoute: React.FC = () => {
     const day = currentDatetime.getUTCDate().toString().padStart(2, '0');
 
     const filename = `HRV-${year}${month}${day}.txt`;
+
+    console.log(filename);
 
     // Attempt to read the day data file.
     try {
@@ -241,7 +247,7 @@ const AppRoute: React.FC = () => {
         message = "Try taking a break for a bit to catch some rest!"
       }
       else {
-        header = "You might be a bit stress."
+        header = "You might be a bit stressed."
         message = "Try checking out the advice section in the Tranquil+ app to get some activities to destress!"
       }
       
