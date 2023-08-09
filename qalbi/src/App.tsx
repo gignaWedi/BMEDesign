@@ -56,7 +56,7 @@ const NOTIFICATIONS = "notifications";
  * React Functional Component responsible for setting up global states and creating the routing for the device android application.
  */
 const AppRoute: React.FC = () => {
-  /*
+  
   // Test Code!
   const dumpHrv = async () => {
     const {files} = await Filesystem.readdir({
@@ -96,13 +96,11 @@ const AppRoute: React.FC = () => {
     await determineUserState();
   };
 
-    */
+    
   
 
   // On startup, load the passcode
   useEffect(() => {
-    //dumpHrv();
-    //testHrv()
     loadPasscode();
   }, []);
 
@@ -344,7 +342,13 @@ const AppRoute: React.FC = () => {
       dismiss();
   }, [passcode])
 
-  useEffect(() => {if (loggedIn) dataHook([hrvCallback, errorCallback], () => setConnected(true), () => setConnected(false))}, [loggedIn]); // Start dataHook on login
+  useEffect(() => {
+    if (loggedIn) {
+      dataHook([hrvCallback, errorCallback], () => setConnected(true), () => setConnected(false));
+      dumpHrv();
+      testHrv();
+    }
+  }, [loggedIn]); // Start dataHook on login
   
   const [failLogin, setFailLogin] = useState(false);
 
